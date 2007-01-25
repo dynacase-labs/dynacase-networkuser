@@ -1,5 +1,5 @@
 # ============================================
-# $Id: Makefile.in,v 1.1 2007/01/23 17:02:53 eric Exp $
+# $Id: Makefile.in,v 1.2 2007/01/25 17:54:38 eric Exp $
 # ============================================
 PACKAGE = @PACKAGE@
 VERSION = @VERSION@
@@ -15,7 +15,7 @@ GZIP_ENV = --best
 TOP_MODULES = ad.php
 export targetdir PACKAGE
 
-SUBDIR= Class Actions  Images
+SUBDIR= Class Actions  Api Images
 
 include $(utildir)/PubRule
 

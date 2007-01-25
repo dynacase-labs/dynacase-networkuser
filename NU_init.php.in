@@ -1,6 +1,6 @@
 <?php
 // ---------------------------------------------------------------
-// $Id: NU_init.php.in,v 1.1 2007/01/23 10:45:35 eric Exp $
+// $Id: NU_init.php.in,v 1.2 2007/01/25 17:54:38 eric Exp $
 // $Source: /home/cvsroot/anakeen/freedom/networkuser/NU_init.php.in,v $
 // ---------------------------------------------------------------
 //  O   Anakeen - 2001
@@ -25,18 +25,24 @@
 global $app_const;
 
 $app_const= array(
-  "INIT" => "yes",
-  "VERSION" => "@VERSION@-@RELEASE@",
-  "GATE_USEOLD"    =>array("val"=>"no",
-			   "descr"=>N_("use what gate"),
-			   "user"=>"Y",
-			   "global"=>"Y",
-			   "kind"=>"enum(yes|no)"),
-  "GATE_PREFID" => array("val"=>"",
-			 "user"=>"Y",
-			 "global"=>"Y",
-			 "descr"=>N_("preferential doc gate id")),
-  
-);
+		  "INIT" => "yes",
+		  "VERSION" => "@VERSION@-@RELEASE@",
+		  "AD_HOST"    =>array("val"=>"",
+				       "descr"=>N_("host of the ldap active directory"),
+				       "global"=>"Y",
+				       "user"=>"N"),
+		  "AD_BASE"    =>array("val"=>"",
+				       "descr"=>N_("base path of ldap"),
+				       "global"=>"Y",
+				       "user"=>"N"),
+		  "AD_BINDDN"    =>array("val"=>"",
+					 "descr"=>N_("DN of user which can access of all user and group of the Active directory"),
+					 "global"=>"Y",
+					 "user"=>"N"),
+		  "AD_PASSWORD"    =>array("val"=>"",
+					   "global"=>"Y",
+					   "descr"=>N_("password of then DN"),
+					   "user"=>"N")
+		  );
 
 ?>

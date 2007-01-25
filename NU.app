@@ -1,6 +1,6 @@
 <?php
 // ---------------------------------------------------------------
-// $Id: NU.app,v 1.1 2007/01/23 10:45:35 eric Exp $
+// $Id: NU.app,v 1.2 2007/01/25 17:54:38 eric Exp $
 // $Source: /home/cvsroot/anakeen/freedom/networkuser/NU.app,v $
 // ---------------------------------------------------------------
 //  O   Anakeen - 2001
@@ -23,11 +23,11 @@
 // ---------------------------------------------------------------
 
 $app_desc = array (
-		   "name"	 =>"FDC",		//Name
-		   "short_name"	=>N_("Common functions"),    	//Short name
-		   "description"=>N_("Common function for FREEDOM client API"),  //long description
+		   "name"	 =>"AD",		//Name
+		   "short_name"	=>N_("Active Directory"),    	//Short name
+		   "description"=>N_("Active Directory Authentification"),  //long description
 		   "access_free"=>"Y",			//Access free ? (Y,N)
-		   "icon"	=>"freecommon.gif",	//Icon
+		   "icon"	=>"ad.png",	//Icon
 		   "displayable"=>"N",			//Should be displayed on an app list (Y,N)
 		   "with_frame"	=>"N",			//Use multiframe ? (Y,N)
 		   "childof"	=>""		        // instance of FREEDOM GENERIC application	
@@ -35,22 +35,6 @@ $app_desc = array (
 
   
 
-$action_desc = array (  
-		      array( 
-			    "name"		=>"GETDOCVALUE",
-			    "short_name"	=>N_("get value for an attribute of document")
-			    ),
-		      array( 
-			    "name"		=>"GETDOCVALUES",
-			    "short_name"	=>N_("get all values of document")
-			    ),
-		      array( 
-			    "name"		=>"GETDOCPROPERTIES",
-			    "short_name"	=>N_("get all properties of document")
-			    ),
-		      array( 
-			    "name"		=>"SETPARAMU",
-			    "short_name"	=>N_("set user parameter")
-			    )); 
+
 		
 ?>
