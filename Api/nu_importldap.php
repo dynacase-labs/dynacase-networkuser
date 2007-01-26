@@ -3,7 +3,7 @@
  * Import Users andgrops from a Active Directory
  *
  * @author Anakeen 2007
- * @version $Id: nu_importldap.php,v 1.1 2007/01/25 17:54:38 eric Exp $
+ * @version $Id: nu_importldap.php,v 1.2 2007/01/26 16:14:11 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  * @subpackage 
@@ -19,6 +19,7 @@
 include_once("FDL/Lib.Attr.php");
 include_once("FDL/Class.DocFam.php");
 include_once("AD/Lib.AD.php");
+include_once("AD/Lib.DocAD.php");
 
 $dbaccess=$appl->GetParam("FREEDOM_DB");
 if ($dbaccess == "") {
@@ -98,22 +99,28 @@ print "ERROR:$err\n";
 //print_r(($groups));
 
 foreach ($groups as $sid=>$group) {
-  print "search $sid...\n";
-  $err=getAdInfoFromSid($sid,$info);
-  print "ERROR:$err";
-  print_r($info);
-
+  print "\nSearch $sid...";
   $doc=getDocFromSid($sid);
   if (! $doc) {
-    createADGroup($sid);
-    $doc=getDocFromSid($sid);
+    $err=createADGroup($sid,$doc);    
+    print "Create group".$doc->title."[$err]\"n";
+  } else  {
+    $err=$doc->refreshFromAD();
+    print "Refresh ".$doc->title."[$err]\"n";
   }
-  if ($doc) {
-    $doc->refreshFromAD();
-  }
-  
-
 }
 
+$err=searchinAD("objectclass=user",$users);
+foreach ($users as $sid=>$user) {
+  print "\nSearch $sid...";
+  $doc=getDocFromSid($sid);
+  if (! $doc) {
+    $err=createADUser($sid,$doc);    
+    print "Create User".$doc->title."[$err]\"n";
+  } else  {
+    $err=$doc->refreshFromAD();
+    print "Refresh ".$doc->title."[$err]\"n";
+  }
+}
 
 ?>
