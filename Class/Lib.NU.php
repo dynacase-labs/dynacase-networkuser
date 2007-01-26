@@ -1,14 +1,5 @@
 <?php
 
-function getDocFromSid($sid) {
-}
-
-function createADUser($sid) {
-}
-
-
-function createADGroup($sid) {
-}
 
 /**
  * return LDAP AD information from SID
@@ -18,7 +9,6 @@ function createADGroup($sid) {
  */
  function getAdInfoFromSid($sid,&$info) {
    $hex='\\'.substr(strtoupper(chunk_split(bin2hex(sid_encode($sid)),2,'\\')),0,-1);
-   print "[$hex]";
    $err=getADUser($hex,$info,"objectsid");
    return $err;  
 }
@@ -96,9 +86,9 @@ function sid_encode($sid) {
   $n232=pow(2,32);
   $tid=explode('-',$sid);
   
-  $number=count($tid)-4;
+  $number=count($tid)-3;
   $tpack["rev"]=sprintf("%02d",intval($tid[1]));
-  $tpack["b"]=sprintf("%02d",5); // always 5
+  $tpack["b"]=sprintf("%02d",$number); // 
   if (floatval($tid[2]) >= $n232) {    
     $tpack["c"]=intval(floatval($tid[2])/$n232);
     $tpack["d"]=intval(floatval($tid[2])-floatval($tpack["c"])*$n232);
@@ -110,7 +100,6 @@ function sid_encode($sid) {
     $tpack["e".($i+1)]=floatval($tid[$i+3]);
   }
 
-  print_r($tpack);
   if ($number==5) 
   $osid=pack("H2H2nNV*",$tpack["rev"],$tpack["b"],$tpack["c"],$tpack["d"],
 	  $tpack["e1"],$tpack["e2"],$tpack["e3"],$tpack["e4"],$tpack["e5"] );
@@ -130,7 +119,6 @@ function sid_decode($osid) {
   $sid=false;
   if (!$osid) return false;
   $u=unpack("H2rev/H2b/nc/Nd/V*e", $osid);
-  print_r2($u);
   if ($u) {
     $n232=pow(2,32);
     unset($u["b"]);

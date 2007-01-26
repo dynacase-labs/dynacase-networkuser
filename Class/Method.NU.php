@@ -3,7 +3,7 @@
  * Active Directory Group manipulation
  *
  * @author Anakeen 2007
- * @version $Id: Method.NU.php,v 1.2 2007/01/25 17:54:38 eric Exp $
+ * @version $Id: Method.NU.php,v 1.3 2007/01/26 16:14:43 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -11,9 +11,14 @@
  */
 
 
+  /**
+   * Not write in FREEDOM Ldap
+   */
+function UseLdap() { return false; }
 
 function refreshFromAD() {
   include_once("AD/Lib.AD.php");
+  include_once("AD/Lib.DocAD.php");
   $err=getADUser($this->getValue('us_login'),$info);
   //  print_r2($info);
   //var_dump (xdebug_get_function_stack());		 
@@ -34,29 +39,12 @@ function refreshFromAD() {
   if ($dnmembers) {
     if (! is_array($dnmembers)) $dnmembers=array($dnmembers);
     foreach ($dnmembers as $k=>$dnmember) {
-      print "<p>Find $dnmember</p>";
+      //      print "<p>Find $dnmember</p>";
       $err=$this->getADDN($dnmember,$infogrp);
-      $g=new User("");
-      $g->SetLoginName($infogrp["samaccountname"]);
-      if (! $g->isAffected()) {
-	print "<H1>Need create group ".$infogrp["samaccountname"]."</h1>";
-
-    
-	$g->firstname="";
-	$g->lastname=$infogrp["name"];
-	$g->login=$infogrp["samaccountname"];
-	$g->isgroup='Y';
-	$g->password_new=uniqid("ad");
-	$g->iddomain="0";
-	$g->famid="ADGROUP";
-	$err=$g->Add();
-	print "$err: create groupe".$g->fid;
-      }
+      $gid=$infogrp["objectsid"];
+      $err=createADGroup($gid,$dg);      
       if ($err=="") {
-	$gfid=$g->fid;
-	$dg=new_doc($this->dbaccess,$gfid);
 	$err=$dg->addFile($this->initid);
-	$dg->refreshFromAD();
       }
     }
   }
@@ -67,35 +55,12 @@ function refreshFromAD() {
     if (! is_array($dnmembers)) $dnmembers=array($dnmembers);
     
     foreach ($dnmembers as $k=>$pgid) {
-      print "<p>Find2 Primary group:$dnmember</p>";
+      //      print "<p>Find2 Primary group:$dnmember</p>";
       $basesid=substr($info["objectsid"],0,strrpos($info["objectsid"],"-"));
       $gid=$basesid."-".$pgid;
-      print "<p>Search $gid</p>";
-      $hex='\\\\'.substr(strtoupper(chunk_split(bin2hex(sid_encode($gid)),2,'\\\\')),0,-1);
-      print "[$hex]";
-      $err=getADUser($hex,$infogrp,"objectsid");
-      $g=new User("");
-      print_r2($infogrp);
-      $g->SetLoginName($infogrp["samaccountname"]);
-      if (! $g->isAffected()) {
-	print "<H1>Need create group ".$infogrp["samaccountname"]."</h1>";
-
-    
-	$g->firstname="";
-	$g->lastname=$infogrp["name"];
-	$g->login=$infogrp["samaccountname"];
-	$g->isgroup='Y';
-	$g->password_new=uniqid("ad");
-	$g->iddomain="0";
-	$g->famid="ADGROUP";
-	$err=$g->Add();
-	print "$err: create groupe".$g->fid;
-      }
+      $err=createADGroup($gid,$dg);    
       if ($err=="") {
-	$gfid=$g->fid;
-	$dg=new_doc($this->dbaccess,$gfid);
 	$err=$dg->addFile($this->initid);
-	$dg->refreshFromAD();
       }
     }
   }
@@ -137,7 +102,7 @@ function refreshFromAD() {
       $info1 = ldap_get_entries($ds, $sr);
       $info0=$info1[0];
       $entry= ldap_first_entry($ds, $sr);
-      //      print "<pre>";print_r($info);print "</pre>";
+
       foreach ($info0 as $k=>$v) {
 	if (! is_numeric($k)) {
 	  if ($k=="objectsid") {
