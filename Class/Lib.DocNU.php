@@ -12,7 +12,7 @@ function getDocFromSid($sid) {
 
   $dbaccess=getParam("FREEDOM_DB");
   $filter=array("ad_sid='".pg_escape_string($sid)."'");
-  $ls = getChildDoc($dbaccess, 0 ,0,1, $filter, 1, "LIST","ADGROUP");
+  $ls = getChildDoc($dbaccess, 0 ,0,1, $filter, 1, "LIST","LDAPGROUP");
 
   if (count($ls) == 1) return $ls[0];
   return false;  
@@ -46,11 +46,11 @@ function createADFamily($sid,&$doc,$family,$isgroup) {
 }
 
 function createADGroup($sid,&$doc) {
-  createADFamily($sid,$doc,"ADGROUP",true);
+  createADFamily($sid,$doc,"LDAPGROUP",true);
 }
 
 function createADUser($sid,&$doc) { 
-  createADFamily($sid,$doc,"ADUSER",false);
+  createADFamily($sid,$doc,"LDAPUSER",false);
 }
 
 ?>

@@ -5,7 +5,7 @@
  * All HTTP requests call index.php to execute action within application
  *
  * @author Anakeen 2007
- * @version $Id: nu.php,v 1.3 2007/01/26 16:15:03 eric Exp $
+ * @version $Id: nu.php,v 1.4 2007/01/29 16:58:02 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package WHAT
  * @subpackage 
@@ -57,7 +57,7 @@ if ($login) {
 	$WHATUSER->login=$login;
 	$WHATUSER->password_new=uniqid("ad");
 	$WHATUSER->iddomain="0";
-	$WHATUSER->famid="ADUSER";
+	$WHATUSER->famid="LDAPUSER";
 	$err=$WHATUSER->Add();
 	if ($err != "") {
 	  print sprintf(_("cannot create user %s: %s"),$login,$err);

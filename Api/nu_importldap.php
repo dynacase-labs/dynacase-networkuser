@@ -3,7 +3,7 @@
  * Import Users andgrops from a Active Directory
  *
  * @author Anakeen 2007
- * @version $Id: nu_importldap.php,v 1.2 2007/01/26 16:14:11 eric Exp $
+ * @version $Id: nu_importldap.php,v 1.3 2007/01/29 16:58:02 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  * @subpackage 
@@ -103,10 +103,10 @@ foreach ($groups as $sid=>$group) {
   $doc=getDocFromSid($sid);
   if (! $doc) {
     $err=createADGroup($sid,$doc);    
-    print "Create group".$doc->title."[$err]\"n";
+    print "Create group".$doc->title."[$err]\n";
   } else  {
     $err=$doc->refreshFromAD();
-    print "Refresh ".$doc->title."[$err]\"n";
+    print "Refresh ".$doc->title."[$err]\n";
   }
 }
 
@@ -116,10 +116,10 @@ foreach ($users as $sid=>$user) {
   $doc=getDocFromSid($sid);
   if (! $doc) {
     $err=createADUser($sid,$doc);    
-    print "Create User".$doc->title."[$err]\"n";
+    print "Create User".$doc->title."[$err]\n";
   } else  {
     $err=$doc->refreshFromAD();
-    print "Refresh ".$doc->title."[$err]\"n";
+    print "Refresh ".$doc->title."[$err]\n";
   }
 }
 
