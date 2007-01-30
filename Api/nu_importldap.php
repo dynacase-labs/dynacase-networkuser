@@ -3,7 +3,7 @@
  * Import Users andgrops from a Active Directory
  *
  * @author Anakeen 2007
- * @version $Id: nu_importldap.php,v 1.3 2007/01/29 16:58:02 eric Exp $
+ * @version $Id: nu_importldap.php,v 1.4 2007/01/30 17:11:13 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  * @subpackage 
@@ -38,6 +38,7 @@ function searchinAD($filter,&$info) {
   $ldappw=getParam("AD_PASSWORD");
   $ldapbinddn=getParam("AD_BINDDN");
 
+  $ldapuniqid=strtolower(getParam("LDAP_UNIQID"));
 
   $info=array();
 
@@ -45,44 +46,47 @@ function searchinAD($filter,&$info) {
 
   if ($ds) {
     $r=ldap_bind($ds,$ldapbinddn,$ldappw);  
+    if ($r) {
+      // Search login entry
 
-    // Search login entry
-    $sr=ldap_search($ds, "$ldapbase", $filter); 
+      print "BINDED...$ldapbase $filter\n";
+      $sr=ldap_search($ds, "$ldapbase", $filter); 
 
-    $count= ldap_count_entries($ds, $sr);
+      $count= ldap_count_entries($ds, $sr);
    
-    $infos = ldap_get_entries($ds, $sr);
-    $entry= ldap_first_entry($ds, $sr);
+      $infos = ldap_get_entries($ds, $sr);
+      $entry= ldap_first_entry($ds, $sr);
 
-    foreach ($infos as $info0) {
-      $sid=false;
-      if (! is_array($info0)) continue;
-      $info1=array();
-      foreach ($info0 as $k=>$v) {
-	if (! is_numeric($k)) {
-	  //print "$k:[".print_r2(ldap_get_values($ds, $entry, $k))."]";
-	  if ($k=="objectsid") {
-	    // get binary value from ldap and decode it
-	    $values = ldap_get_values_len($ds, $entry,$k);	   
-	    $info1[$k]=sid_decode($values[0]);
-	    $sid=$info1[$k];
-	  } else {
-	    if ($v["count"]==1)  $info1[$k]=$v[0];
-	    else {
-	      //	    unset($v["count"]);
-	      if (is_array($v))  unset($v["count"]);   
-	      $info1[$k]=$v;
+      foreach ($infos as $info0) {
+	$sid=false;
+	if (! is_array($info0)) continue;
+	$info1=array();
+	foreach ($info0 as $k=>$v) {
+	  if (! is_numeric($k)) {
+	    //print "$k:[".print_r2(ldap_get_values($ds, $entry, $k))."]";
+	    if ($k=="objectsid") {
+	      // get binary value from ldap and decode it
+	      $values = ldap_get_values_len($ds, $entry,$k);	   
+	      $info1[$k]=sid_decode($values[0]);
+	    
+	    } else {
+	      if ($v["count"]==1)  $info1[$k]=$v[0];
+	      else {
+		//	    unset($v["count"]);
+		if (is_array($v))  unset($v["count"]);   
+		$info1[$k]=$v;
+	      }
 	    }
+	    if ($k==$ldapuniqid) $sid=$info1[$k];
 	  }
 	}
-      }
-      if ($sid)   $info[$sid]=$info1;
-      else $info[]=$info1;
+	if ($sid)   $info[$sid]=$info1;
+	else $info[]=$info1;
       
-      $entry= ldap_next_entry($ds, $entry);
-    }
+	$entry= ldap_next_entry($ds, $entry);
+      }
 
-    
+    } else $err=sprintf(_("Unable to bind to LDAP server %s"),$ldaphost);
     ldap_close($ds);
 
   } else {
@@ -93,14 +97,15 @@ function searchinAD($filter,&$info) {
   
 }
 
-$err=searchinAD("objectclass=group",$groups);
+//$err=searchinAD("objectclass=group",$groups);
+$err=searchinAD("objectclass=posixGroup",$groups);
 print "ERROR:$err\n";
 //print_r(array_keys($groups));
-//print_r(($groups));
+print_r(($groups));
 
 foreach ($groups as $sid=>$group) {
   print "\nSearch $sid...";
-  $doc=getDocFromSid($sid);
+  $doc=getDocFromUniqId($sid);
   if (! $doc) {
     $err=createADGroup($sid,$doc);    
     print "Create group".$doc->title."[$err]\n";
@@ -110,10 +115,12 @@ foreach ($groups as $sid=>$group) {
   }
 }
 
-$err=searchinAD("objectclass=user",$users);
+//$err=searchinAD("objectclass=user",$users);
+$err=searchinAD("objectclass=posixAccount",$users);
+print_r(($users));
 foreach ($users as $sid=>$user) {
   print "\nSearch $sid...";
-  $doc=getDocFromSid($sid);
+  $doc=getDocFromUniqId($sid);
   if (! $doc) {
     $err=createADUser($sid,$doc);    
     print "Create User".$doc->title."[$err]\n";

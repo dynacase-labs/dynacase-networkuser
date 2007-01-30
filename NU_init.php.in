@@ -1,6 +1,6 @@
 <?php
 // ---------------------------------------------------------------
-// $Id: NU_init.php.in,v 1.2 2007/01/25 17:54:38 eric Exp $
+// $Id: NU_init.php.in,v 1.3 2007/01/30 17:11:13 eric Exp $
 // $Source: /home/cvsroot/anakeen/freedom/networkuser/NU_init.php.in,v $
 // ---------------------------------------------------------------
 //  O   Anakeen - 2001
@@ -40,6 +40,14 @@ $app_const= array(
 					 "global"=>"Y",
 					 "user"=>"N"),
 		  "AD_PASSWORD"    =>array("val"=>"",
+					   "global"=>"Y",
+					   "descr"=>N_("password of then DN"),
+					   "user"=>"N"),
+		  "LDAP_UNIQID"    =>array("val"=>"objectSid",
+					   "global"=>"Y",
+					   "descr"=>N_("LDAP attribute fir unique identificator "),
+					   "user"=>"N"),
+		  "LDAP_LOGIN"    =>array("val"=>"sAMAccountName",
 					   "global"=>"Y",
 					   "descr"=>N_("password of then DN"),
 					   "user"=>"N")
