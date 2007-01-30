@@ -8,8 +8,12 @@
  * @return string error message - empty means no error
  */
  function getAdInfoFromSid($sid,&$info) {
-   $hex='\\'.substr(strtoupper(chunk_split(bin2hex(sid_encode($sid)),2,'\\')),0,-1);
-   $err=getADUser($hex,$info,"objectsid");
+  $ldapuniqid=strtolower(getParam("LDAP_UNIQID"));
+  if ($ldapuniqid == "objectsid") {
+    $hex='\\'.substr(strtoupper(chunk_split(bin2hex(sid_encode($sid)),2,'\\')),0,-1);
+    $sid=$hex;
+  }
+   $err=getADUser($sid,$info,$ldapuniqid);
    return $err;  
 }
 /**
@@ -34,6 +38,7 @@ function getADUser($login,&$info,$ldapbindloginattribute="sAMAccountName") {
     $r=ldap_bind($ds,$ldapbinddn,$ldappw);  
 
     // Search login entry
+print "dap_search($ds, $ldapbase, $ldapbindloginattribute=$login\n";
     $sr=ldap_search($ds, "$ldapbase", "$ldapbindloginattribute=$login"); 
 
     $count= ldap_count_entries($ds, $sr);

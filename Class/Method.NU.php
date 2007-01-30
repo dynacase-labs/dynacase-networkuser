@@ -3,7 +3,7 @@
  * Active Directory Group manipulation
  *
  * @author Anakeen 2007
- * @version $Id: Method.NU.php,v 1.3 2007/01/26 16:14:43 eric Exp $
+ * @version $Id: Method.NU.php,v 1.4 2007/01/30 17:12:00 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -20,7 +20,7 @@ function refreshFromAD() {
   include_once("AD/Lib.AD.php");
   include_once("AD/Lib.DocAD.php");
   $err=getADUser($this->getValue('us_login'),$info);
-  //  print_r2($info);
+  //    print_r($info);
   //var_dump (xdebug_get_function_stack());		 
 
   $ldapmap=$this->getMapAttributes();
@@ -29,8 +29,8 @@ function refreshFromAD() {
     if ($v["ldapname"] && $v["ldapmap"] && ($v["ldapmap"][0]!=':') && ($info[strtolower($v["ldapname"])])) {
       $val=$info[strtolower($v["ldapname"])];
       $att=$v["ldapmap"];
-      $this->setValue($att,$val);
-      //print "$att:[$val]<br>";
+      if ($val)     $this->setValue($att,$val);
+
     }
   }
   $this->modify();
@@ -96,6 +96,7 @@ function refreshFromAD() {
 
     // Search login entry
     $filter="(objectclass=group)";
+    $filter="(objectclass=posixGroup)";
     $sr=ldap_read($ds, $dn,$filter);
     $count= ldap_count_entries($ds, $sr);
     if ($count==1) {
