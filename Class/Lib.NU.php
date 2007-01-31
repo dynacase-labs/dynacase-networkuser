@@ -1,20 +1,33 @@
 <?php
+/**
+ *  LDAP functions
+ *
+ * @author Anakeen 2007
+ * @version $Id: Lib.NU.php,v 1.4 2007/01/31 17:48:24 eric Exp $
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @package FREEDOM-AD
+ */
+ /**
+ */
 
-
+include_once("AD/Lib.ConfLDAP.php");
 /**
  * return LDAP AD information from SID
- * @param string $sid ascii sid
+ * @param string $sid ascii unique id
+ * @param string $ldapuniqid ldap attribute for filter unique id
  * @param array &$info ldap information
  * @return string error message - empty means no error
  */
- function getAdInfoFromSid($sid,&$info) {
-  $ldapuniqid=strtolower(getParam("LDAP_UNIQID"));
+function getAdInfoFromSid($sid,&$info,$isgroup) {
+
+  $ldapuniqid=strtolower(getLDAPconf(getParam("LDAP_KIND"),
+				     ($isgroup)?"LDAP_GROUPUID":"LDAP_USERUID"));
   if ($ldapuniqid == "objectsid") {
     $hex='\\'.substr(strtoupper(chunk_split(bin2hex(sid_encode($sid)),2,'\\')),0,-1);
     $sid=$hex;
   }
-   $err=getADUser($sid,$info,$ldapuniqid);
-   return $err;  
+  $err=getLDAPFromUid($sid,$isgroup,$info);
+  return $err;  
 }
 /**
  * return LDAP AD information from the $login
@@ -22,7 +35,7 @@
  * @param array &$info ldap information
  * @return string error message - empty means no error
  */
-function getADUser($login,&$info,$ldapbindloginattribute="sAMAccountName") {
+function getLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$info) {
   include_once("AD/Lib.AD.php");
   $ldaphost=getParam("AD_HOST");
   $ldapbase=getParam("AD_BASE");
@@ -38,10 +51,12 @@ function getADUser($login,&$info,$ldapbindloginattribute="sAMAccountName") {
     $r=ldap_bind($ds,$ldapbinddn,$ldappw);  
 
     // Search login entry
-print "dap_search($ds, $ldapbase, $ldapbindloginattribute=$login\n";
-    $sr=ldap_search($ds, "$ldapbase", "$ldapbindloginattribute=$login"); 
-
+    $filter=sprintf("(&(objectClass=%s)(%s=%s))",
+		    $ldapclass,$ldapbindloginattribute,$login);
+print "ldap_search($ds, $ldapbase, $filter\n";
+    $sr=ldap_search($ds, $ldapbase, $filter); 
     $count= ldap_count_entries($ds, $sr);
+    print "found:$count\n";
     if ($count==1) {
       $info1 = ldap_get_entries($ds, $sr);
       $info0= $info1[0];
@@ -67,7 +82,7 @@ print "dap_search($ds, $ldapbase, $ldapbindloginattribute=$login\n";
       
     } else {
       if ($count==0) $err=sprintf(_("Cannot find user [%s]"),$login);
-      else $err=sprintf(_("Find mutiple user with same login  [%s]"),$login);
+      else $err=sprintf(_("Find mutiple user with same id  [%s]"),$login);
     }
 
     
@@ -78,6 +93,42 @@ print "dap_search($ds, $ldapbase, $ldapbindloginattribute=$login\n";
   }
 
   return $err;
+  
+}
+/**
+ * return LDAP AD information from the $login
+ * @param string $login connection identificator
+ * @param array &$info ldap information
+ * @return string error message - empty means no error
+ */
+function getLDAPFromLogin($login,$isgroup,&$info) {
+  $conf=getLDAPconf(getParam("LDAP_KIND"));
+  if ($isgroup) {
+    $ldapattr=$conf["LDAP_GROUPLOGIN"];
+    $ldapclass=$conf["LDAP_GROUPCLASS"];
+  } else {
+    $ldapattr=$conf["LDAP_USERLOGIN"];
+    $ldapclass=$conf["LDAP_USERCLASS"];
+  }
+  return getLDAPFrom($login,$ldapclass,$ldapattr,$info);
+  
+}
+/**
+ * return LDAP AD information from the $login
+ * @param string $login connection identificator
+ * @param array &$info ldap information
+ * @return string error message - empty means no error
+ */
+function getLDAPFromUid($uid,$isgroup,&$info) {
+  $conf=getLDAPconf(getParam("LDAP_KIND"));
+  if ($isgroup) {
+    $ldapattr=$conf["LDAP_GROUPUID"];
+    $ldapclass=$conf["LDAP_GROUPCLASS"];
+  } else {
+    $ldapattr=$conf["LDAP_USERUID"];
+    $ldapclass=$conf["LDAP_USERCLASS"];
+  }
+  return getLDAPFrom($uid,$ldapclass,$ldapattr,$info);
   
 }
 /**

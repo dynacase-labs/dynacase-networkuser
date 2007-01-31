@@ -3,7 +3,7 @@
  * Import Users andgrops from a Active Directory
  *
  * @author Anakeen 2007
- * @version $Id: nu_importldap.php,v 1.4 2007/01/30 17:11:13 eric Exp $
+ * @version $Id: nu_importldap.php,v 1.5 2007/01/31 17:48:24 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  * @subpackage 
@@ -23,22 +23,30 @@ include_once("AD/Lib.DocAD.php");
 
 $dbaccess=$appl->GetParam("FREEDOM_DB");
 if ($dbaccess == "") {
-  print "Freedom Database not found : param FREEDOM_DB";
+  print "Freedom Database not found : param FREEDOM_DB\n";
   exit;
 }
+
+$conf=getLDAPconf(getParam("LDAP_KIND"));
+if (! $conf) {
+  print "Kind of LDAP database must be defined: parameter LDAP_KIND.\n";
+  exit;
+  
+ }
+
 /**
  * return LDAP AD information from the $login
  * @param string $login connection identificator
  * @param array &$info ldap information
  * @return string error message - empty means no error
  */
-function searchinAD($filter,&$info) {
+function searchinAD($filter,$ldapuniqid,&$info) {
+  print "searchinAD($filter,$ldapuniqid\n";
   $ldaphost=getParam("AD_HOST");
   $ldapbase=getParam("AD_BASE");
   $ldappw=getParam("AD_PASSWORD");
   $ldapbinddn=getParam("AD_BINDDN");
-
-  $ldapuniqid=strtolower(getParam("LDAP_UNIQID"));
+  $ldapuniqid=strtolower($ldapuniqid);
 
   $info=array();
 
@@ -98,7 +106,7 @@ function searchinAD($filter,&$info) {
 }
 
 //$err=searchinAD("objectclass=group",$groups);
-$err=searchinAD("objectclass=posixGroup",$groups);
+$err=searchinAD("objectclass=".$conf["LDAP_GROUPCLASS"],$conf["LDAP_GROUPUID"],$groups);
 print "ERROR:$err\n";
 //print_r(array_keys($groups));
 print_r(($groups));
@@ -114,9 +122,9 @@ foreach ($groups as $sid=>$group) {
     print "Refresh ".$doc->title."[$err]\n";
   }
 }
-
+exit;
 //$err=searchinAD("objectclass=user",$users);
-$err=searchinAD("objectclass=posixAccount",$users);
+$err=searchinAD("objectclass=".$conf["LDAP_USERCLASS"],$conf["LDAP_USERUID"],$users);
 print_r(($users));
 foreach ($users as $sid=>$user) {
   print "\nSearch $sid...";

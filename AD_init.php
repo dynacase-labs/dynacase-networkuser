@@ -1,7 +1,7 @@
 <?php
 // ---------------------------------------------------------------
-// $Id: NU_init.php.in,v 1.4 2007/01/31 17:48:24 eric Exp $
-// $Source: /home/cvsroot/anakeen/freedom/networkuser/NU_init.php.in,v $
+// $Id: AD_init.php,v 1.1 2007/01/31 17:48:24 eric Exp $
+// $Source: /home/cvsroot/anakeen/freedom/networkuser/Attic/AD_init.php,v $
 // ---------------------------------------------------------------
 //  O   Anakeen - 2001
 // O*O  Anakeen development team
@@ -26,7 +26,7 @@ global $app_const;
 
 $app_const= array(
 		  "INIT" => "yes",
-		  "VERSION" => "@VERSION@-@RELEASE@",
+		  "VERSION" => "0.0.0-0",
 		  "AD_HOST"    =>array("val"=>"",
 				       "descr"=>N_("host of the LDAP active directory"),
 				       "global"=>"Y",

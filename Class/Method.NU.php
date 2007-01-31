@@ -3,7 +3,7 @@
  * Active Directory Group manipulation
  *
  * @author Anakeen 2007
- * @version $Id: Method.NU.php,v 1.4 2007/01/30 17:12:00 eric Exp $
+ * @version $Id: Method.NU.php,v 1.5 2007/01/31 17:48:24 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -19,13 +19,13 @@ function UseLdap() { return false; }
 function refreshFromAD() {
   include_once("AD/Lib.AD.php");
   include_once("AD/Lib.DocAD.php");
-  $err=getADUser($this->getValue('us_login'),$info);
-  //    print_r($info);
+
+  $err=getLDAPFromLogin($this->getValue('us_login'),($this->doctype=='D'),$info);
   //var_dump (xdebug_get_function_stack());		 
 
   $ldapmap=$this->getMapAttributes();
   // print_r2($ldapmap);
-  foreach ($ldapmap as $k=>$v) {
+  foreach ($ldapmap as $k=>$v) {    
     if ($v["ldapname"] && $v["ldapmap"] && ($v["ldapmap"][0]!=':') && ($info[strtolower($v["ldapname"])])) {
       $val=$info[strtolower($v["ldapname"])];
       $att=$v["ldapmap"];

@@ -1,7 +1,18 @@
 <?php
+/**
+ *  LDAP Document methods
+ *
+ * @author Anakeen 2007
+ * @version $Id: Lib.DocNU.php,v 1.4 2007/01/31 17:48:24 eric Exp $
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @package FREEDOM-AD
+ */
+ /**
+ */
 
 include_once("FDL/Class.Doc.php");
 include_once("FDL/Lib.Dir.php");
+include_once("AD/Lib.AD.php");
 
 /**
  * return document referenced by Active Directory sid or OpenLDAP uid
@@ -22,32 +33,36 @@ function getDocFromUniqId($sid) {
 }
     
 function createADFamily($sid,&$doc,$family,$isgroup) {
-  $err=getAdInfoFromSid($sid,$infogrp);
+  $err=getAdInfoFromSid($sid,$infogrp,$isgroup);
+  print_r($infogrp);
   if ($err=="") {
-  $g=new User("");
-  $alogin=strtolower(getParam("LDAP_LOGIN"));
+    $g=new User("");
+    $alogin=strtolower(getLDAPconf(getParam("LDAP_KIND"),
+				   ($isgroup)?"LDAP_GROUPLOGIN":"LDAP_USERLOGIN"));
   
-  $g->SetLoginName($infogrp[$alogin]);
-  if (! $g->isAffected()) {
-    
-    $g->firstname="";
-    $g->lastname=$infogrp["name"];
-    $g->login=$infogrp[$alogin];
 
-    $g->isgroup=($isgroup)?'Y':'N';
-    $g->password_new=uniqid("ad");
-    $g->iddomain="0";
-    $g->famid=$family;
-    $err=$g->Add(); 
+    print "createADFamily $alogin\n";
+    $g->SetLoginName($infogrp[$alogin]);
+    if (! $g->isAffected()) {
+    
+      $g->firstname="";
+      $g->lastname=$infogrp["name"];
+      $g->login=$infogrp[$alogin];
+
+      $g->isgroup=($isgroup)?'Y':'N';
+      $g->password_new=uniqid("ad");
+      $g->iddomain="0";
+      $g->famid=$family;
+      $err=$g->Add(); 
+    }
+    if ($err=="") {
+      $gfid=$g->fid;
+      $dbaccess=getParam("FREEDOM_DB");
+      $doc=new_doc($dbaccess,$gfid);
+      $doc->refreshFromAD();
+    }
   }
-  if ($err=="") {
-    $gfid=$g->fid;
-    $dbaccess=getParam("FREEDOM_DB");
-    $doc=new_doc($dbaccess,$gfid);
-    $doc->refreshFromAD();
-  }
-  }
-  if ($err) return sprintf(_("cannot create LDAP %s [%s] : %s"),
+  if ($err) return sprintf(_("Cannot create LDAP %s [%s] : %s"),
 			   $family,$sid,$err);
 }
 
