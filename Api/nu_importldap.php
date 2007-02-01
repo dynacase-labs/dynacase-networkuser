@@ -3,7 +3,7 @@
  * Import Users andgrops from a Active Directory
  *
  * @author Anakeen 2007
- * @version $Id: nu_importldap.php,v 1.5 2007/01/31 17:48:24 eric Exp $
+ * @version $Id: nu_importldap.php,v 1.6 2007/02/01 16:54:52 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  * @subpackage 
@@ -41,7 +41,6 @@ if (! $conf) {
  * @return string error message - empty means no error
  */
 function searchinAD($filter,$ldapuniqid,&$info) {
-  print "searchinAD($filter,$ldapuniqid\n";
   $ldaphost=getParam("AD_HOST");
   $ldapbase=getParam("AD_BASE");
   $ldappw=getParam("AD_PASSWORD");
@@ -56,8 +55,6 @@ function searchinAD($filter,$ldapuniqid,&$info) {
     $r=ldap_bind($ds,$ldapbinddn,$ldappw);  
     if ($r) {
       // Search login entry
-
-      print "BINDED...$ldapbase $filter\n";
       $sr=ldap_search($ds, "$ldapbase", $filter); 
 
       $count= ldap_count_entries($ds, $sr);
@@ -107,33 +104,36 @@ function searchinAD($filter,$ldapuniqid,&$info) {
 
 //$err=searchinAD("objectclass=group",$groups);
 $err=searchinAD("objectclass=".$conf["LDAP_GROUPCLASS"],$conf["LDAP_GROUPUID"],$groups);
-print "ERROR:$err\n";
+if ($err) print "ERROR:$err\n";
 //print_r(array_keys($groups));
-print_r(($groups));
+//print_r(($groups));
 
 foreach ($groups as $sid=>$group) {
-  print "\nSearch $sid...";
+  print "\nSearch group $sid...";
   $doc=getDocFromUniqId($sid);
+
   if (! $doc) {
     $err=createADGroup($sid,$doc);    
     print "Create group".$doc->title."[$err]\n";
   } else  {
     $err=$doc->refreshFromAD();
+    if ($err=="") $doc->postModify();
     print "Refresh ".$doc->title."[$err]\n";
   }
 }
-exit;
+
 //$err=searchinAD("objectclass=user",$users);
 $err=searchinAD("objectclass=".$conf["LDAP_USERCLASS"],$conf["LDAP_USERUID"],$users);
-print_r(($users));
+//print_r(($users));
 foreach ($users as $sid=>$user) {
-  print "\nSearch $sid...";
+  print "\nSearch user $sid...";
   $doc=getDocFromUniqId($sid);
   if (! $doc) {
     $err=createADUser($sid,$doc);    
     print "Create User".$doc->title."[$err]\n";
   } else  {
     $err=$doc->refreshFromAD();
+    if ($err=="") $doc->postModify();
     print "Refresh ".$doc->title."[$err]\n";
   }
 }

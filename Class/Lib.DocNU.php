@@ -3,7 +3,7 @@
  *  LDAP Document methods
  *
  * @author Anakeen 2007
- * @version $Id: Lib.DocNU.php,v 1.4 2007/01/31 17:48:24 eric Exp $
+ * @version $Id: Lib.DocNU.php,v 1.5 2007/02/01 16:54:52 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -34,19 +34,19 @@ function getDocFromUniqId($sid) {
     
 function createADFamily($sid,&$doc,$family,$isgroup) {
   $err=getAdInfoFromSid($sid,$infogrp,$isgroup);
-  print_r($infogrp);
+ 
   if ($err=="") {
     $g=new User("");
     $alogin=strtolower(getLDAPconf(getParam("LDAP_KIND"),
 				   ($isgroup)?"LDAP_GROUPLOGIN":"LDAP_USERLOGIN"));
   
 
-    print "createADFamily $alogin\n";
     $g->SetLoginName($infogrp[$alogin]);
     if (! $g->isAffected()) {
-    
-      $g->firstname="";
-      $g->lastname=$infogrp["name"];
+      foreach ($infogrp as $k=>$v)  if (seems_utf8($v)) $infogrp[$k]=utf8_decode($v);
+
+      $g->firstname=($infogrp["givenname"]=="")?$infogrp["cn"]:$infogrp["givenname"];
+      $g->lastname=$infogrp["sn"];
       $g->login=$infogrp[$alogin];
 
       $g->isgroup=($isgroup)?'Y':'N';

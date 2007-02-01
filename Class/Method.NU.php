@@ -3,7 +3,7 @@
  * Active Directory Group manipulation
  *
  * @author Anakeen 2007
- * @version $Id: Method.NU.php,v 1.5 2007/01/31 17:48:24 eric Exp $
+ * @version $Id: Method.NU.php,v 1.6 2007/02/01 16:54:52 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -24,22 +24,26 @@ function refreshFromAD() {
   //var_dump (xdebug_get_function_stack());		 
 
   $ldapmap=$this->getMapAttributes();
-  // print_r2($ldapmap);
+  //   print_r2($ldapmap);
   foreach ($ldapmap as $k=>$v) {    
     if ($v["ldapname"] && $v["ldapmap"] && ($v["ldapmap"][0]!=':') && ($info[strtolower($v["ldapname"])])) {
       $val=$info[strtolower($v["ldapname"])];
       $att=$v["ldapmap"];
-      if ($val)     $this->setValue($att,$val);
-
-    }
+      if ($val)  {
+	if (seems_utf8($val)) $val=utf8_decode($val);
+	$this->setValue($att,$val);
+      }
+      //if ($val) print "--- $att:$val\n";      
+    } //else print "*** ".$v["ldapmap"]."\n";
   }
+  $name=$this->getValue("GRP_NAME");
+  if ($name=="") $this->setValue("GRP_NAME",$this->getValue("US_LOGIN"));
   $this->modify();
 
   $dnmembers=$info["memberof"];
   if ($dnmembers) {
     if (! is_array($dnmembers)) $dnmembers=array($dnmembers);
     foreach ($dnmembers as $k=>$dnmember) {
-      //      print "<p>Find $dnmember</p>";
       $err=$this->getADDN($dnmember,$infogrp);
       $gid=$infogrp["objectsid"];
       $err=createADGroup($gid,$dg);      
@@ -48,10 +52,10 @@ function refreshFromAD() {
       }
     }
   }
-
+  
 
   $dnmembers=$info["primarygroupid"];
-  if ($dnmembers) {
+  if ($dnmembers) {// for user/group Active Directory
     if (! is_array($dnmembers)) $dnmembers=array($dnmembers);
     
     foreach ($dnmembers as $k=>$pgid) {
@@ -61,6 +65,32 @@ function refreshFromAD() {
       $err=createADGroup($gid,$dg);    
       if ($err=="") {
 	$err=$dg->addFile($this->initid);
+      }
+    }
+  }
+
+
+  if ($this->doctype != 'D') { // for user posixAccount
+    $gid=$info["gidnumber"];
+    if ($gid) {
+      $err=createADGroup($gid,$dg);    
+      if ($err=="") {
+	$err=$dg->addFile($this->initid);
+      }      
+    }
+  } else {
+    // for group posixGroup
+    
+    $dnmembers=$info["memberuid"];
+    if ($dnmembers) {// for user/group Active Directory
+      if (! is_array($dnmembers)) $dnmembers=array($dnmembers);
+      
+      foreach ($dnmembers as $k=>$gid) {
+	//	print "<p>Find Membeers UIds group:$gid</p>";
+	$docu=getDocFromUniqId($gid);
+	if ($docu) {
+	  $err=$this->addFile($docu->initid);
+	}
       }
     }
   }
@@ -95,8 +125,7 @@ function refreshFromAD() {
     $r=ldap_bind($ds,$ldapbinddn,$ldappw);  
 
     // Search login entry
-    $filter="(objectclass=group)";
-    $filter="(objectclass=posixGroup)";
+    $filter="objectclass=*";
     $sr=ldap_read($ds, $dn,$filter);
     $count= ldap_count_entries($ds, $sr);
     if ($count==1) {

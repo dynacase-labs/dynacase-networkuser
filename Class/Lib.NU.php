@@ -3,7 +3,7 @@
  *  LDAP functions
  *
  * @author Anakeen 2007
- * @version $Id: Lib.NU.php,v 1.4 2007/01/31 17:48:24 eric Exp $
+ * @version $Id: Lib.NU.php,v 1.5 2007/02/01 16:54:52 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -53,10 +53,10 @@ function getLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$info) {
     // Search login entry
     $filter=sprintf("(&(objectClass=%s)(%s=%s))",
 		    $ldapclass,$ldapbindloginattribute,$login);
-print "ldap_search($ds, $ldapbase, $filter\n";
     $sr=ldap_search($ds, $ldapbase, $filter); 
     $count= ldap_count_entries($ds, $sr);
-    print "found:$count\n";
+
+    //print "ldap_search($ds, $ldapbase, $filter\n"; print "found:$count\n";
     if ($count==1) {
       $info1 = ldap_get_entries($ds, $sr);
       $info0= $info1[0];
