@@ -1,6 +1,6 @@
 <?php
 // ---------------------------------------------------------------
-// $Id: NU.app,v 1.2 2007/01/25 17:54:38 eric Exp $
+// $Id: NU.app,v 1.3 2007/02/02 13:56:40 eric Exp $
 // $Source: /home/cvsroot/anakeen/freedom/networkuser/NU.app,v $
 // ---------------------------------------------------------------
 //  O   Anakeen - 2001
@@ -24,8 +24,8 @@
 
 $app_desc = array (
 		   "name"	 =>"AD",		//Name
-		   "short_name"	=>N_("Active Directory"),    	//Short name
-		   "description"=>N_("Active Directory Authentification"),  //long description
+		   "short_name"	=>N_("Network users"),    	//Short name
+		   "description"=>N_("Network users and LDAP authentification"),  //long description
 		   "access_free"=>"Y",			//Access free ? (Y,N)
 		   "icon"	=>"ad.png",	//Icon
 		   "displayable"=>"N",			//Should be displayed on an app list (Y,N)

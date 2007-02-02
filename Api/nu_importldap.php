@@ -3,7 +3,7 @@
  * Import Users andgrops from a Active Directory
  *
  * @author Anakeen 2007
- * @version $Id: nu_importldap.php,v 1.6 2007/02/01 16:54:52 eric Exp $
+ * @version $Id: nu_importldap.php,v 1.7 2007/02/02 13:56:40 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  * @subpackage 
@@ -27,9 +27,9 @@ if ($dbaccess == "") {
   exit;
 }
 
-$conf=getLDAPconf(getParam("LDAP_KIND"));
+$conf=getLDAPconf(getParam("NU_LDAP_KIND"));
 if (! $conf) {
-  print "Kind of LDAP database must be defined: parameter LDAP_KIND.\n";
+  print "Kind of LDAP database must be defined: parameter NU_LDAP_KIND.\n";
   exit;
   
  }
@@ -41,10 +41,10 @@ if (! $conf) {
  * @return string error message - empty means no error
  */
 function searchinAD($filter,$ldapuniqid,&$info) {
-  $ldaphost=getParam("AD_HOST");
-  $ldapbase=getParam("AD_BASE");
-  $ldappw=getParam("AD_PASSWORD");
-  $ldapbinddn=getParam("AD_BINDDN");
+  $ldaphost=getParam("NU_LDAP_HOST");
+  $ldapbase=getParam("NU_LDAP_BASE");
+  $ldappw=getParam("NU_LDAP_PASSWORD");
+  $ldapbinddn=getParam("NU_LDAP_BINDDN");
   $ldapuniqid=strtolower($ldapuniqid);
 
   $info=array();

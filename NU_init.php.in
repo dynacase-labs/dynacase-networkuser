@@ -1,6 +1,6 @@
 <?php
 // ---------------------------------------------------------------
-// $Id: NU_init.php.in,v 1.4 2007/01/31 17:48:24 eric Exp $
+// $Id: NU_init.php.in,v 1.5 2007/02/02 13:56:40 eric Exp $
 // $Source: /home/cvsroot/anakeen/freedom/networkuser/NU_init.php.in,v $
 // ---------------------------------------------------------------
 //  O   Anakeen - 2001
@@ -27,23 +27,23 @@ global $app_const;
 $app_const= array(
 		  "INIT" => "yes",
 		  "VERSION" => "@VERSION@-@RELEASE@",
-		  "AD_HOST"    =>array("val"=>"",
-				       "descr"=>N_("host of the LDAP active directory"),
+		  "NU_LDAP_HOST"    =>array("val"=>"",
+				       "descr"=>N_("host of the LDAP"),
 				       "global"=>"Y",
 				       "user"=>"N"),
-		  "AD_BASE"    =>array("val"=>"",
+		  "NU_LDAP_BASE"    =>array("val"=>"",
 				       "descr"=>N_("base path of LDAP"),
 				       "global"=>"Y",
 				       "user"=>"N"),
-		  "AD_BINDDN"    =>array("val"=>"",
+		  "NU_LDAP_BINDDN"    =>array("val"=>"",
 					 "descr"=>N_("DN of user which can access of all user and group of the LDAP"),
 					 "global"=>"Y",
 					 "user"=>"N"),
-		  "AD_PASSWORD"    =>array("val"=>"",
+		  "NU_LDAP_PASSWORD"    =>array("val"=>"",
 					   "global"=>"Y",
 					   "descr"=>N_("password of the DN"),
 					   "user"=>"N"),
-		  "LDAP_KIND"    =>array("val"=>"",
+		  "NU_LDAP_KIND"    =>array("val"=>"",
 					   "global"=>"Y",
 					   "descr"=>N_("kind of users LDAP for authentification"),
 					   "kind"=>"enum(AD|POSIX)")

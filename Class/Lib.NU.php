@@ -3,7 +3,7 @@
  *  LDAP functions
  *
  * @author Anakeen 2007
- * @version $Id: Lib.NU.php,v 1.5 2007/02/01 16:54:52 eric Exp $
+ * @version $Id: Lib.NU.php,v 1.6 2007/02/02 13:56:40 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -20,7 +20,7 @@ include_once("AD/Lib.ConfLDAP.php");
  */
 function getAdInfoFromSid($sid,&$info,$isgroup) {
 
-  $ldapuniqid=strtolower(getLDAPconf(getParam("LDAP_KIND"),
+  $ldapuniqid=strtolower(getLDAPconf(getParam("NU_LDAP_KIND"),
 				     ($isgroup)?"LDAP_GROUPUID":"LDAP_USERUID"));
   if ($ldapuniqid == "objectsid") {
     $hex='\\'.substr(strtoupper(chunk_split(bin2hex(sid_encode($sid)),2,'\\')),0,-1);
@@ -37,10 +37,10 @@ function getAdInfoFromSid($sid,&$info,$isgroup) {
  */
 function getLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$info) {
   include_once("AD/Lib.AD.php");
-  $ldaphost=getParam("AD_HOST");
-  $ldapbase=getParam("AD_BASE");
-  $ldappw=getParam("AD_PASSWORD");
-  $ldapbinddn=getParam("AD_BINDDN");
+  $ldaphost=getParam("NU_LDAP_HOST");
+  $ldapbase=getParam("NU_LDAP_BASE");
+  $ldappw=getParam("NU_LDAP_PASSWORD");
+  $ldapbinddn=getParam("NU_LDAP_BINDDN");
 
 
   $info=array();
@@ -102,7 +102,7 @@ function getLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$info) {
  * @return string error message - empty means no error
  */
 function getLDAPFromLogin($login,$isgroup,&$info) {
-  $conf=getLDAPconf(getParam("LDAP_KIND"));
+  $conf=getLDAPconf(getParam("NU_LDAP_KIND"));
   if ($isgroup) {
     $ldapattr=$conf["LDAP_GROUPLOGIN"];
     $ldapclass=$conf["LDAP_GROUPCLASS"];
@@ -120,7 +120,7 @@ function getLDAPFromLogin($login,$isgroup,&$info) {
  * @return string error message - empty means no error
  */
 function getLDAPFromUid($uid,$isgroup,&$info) {
-  $conf=getLDAPconf(getParam("LDAP_KIND"));
+  $conf=getLDAPconf(getParam("NU_LDAP_KIND"));
   if ($isgroup) {
     $ldapattr=$conf["LDAP_GROUPUID"];
     $ldapclass=$conf["LDAP_GROUPCLASS"];

@@ -3,7 +3,7 @@
  *  LDAP Document methods
  *
  * @author Anakeen 2007
- * @version $Id: Lib.DocNU.php,v 1.5 2007/02/01 16:54:52 eric Exp $
+ * @version $Id: Lib.DocNU.php,v 1.6 2007/02/02 13:56:40 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -37,7 +37,7 @@ function createADFamily($sid,&$doc,$family,$isgroup) {
  
   if ($err=="") {
     $g=new User("");
-    $alogin=strtolower(getLDAPconf(getParam("LDAP_KIND"),
+    $alogin=strtolower(getLDAPconf(getParam("NU_LDAP_KIND"),
 				   ($isgroup)?"LDAP_GROUPLOGIN":"LDAP_USERLOGIN"));
   
 

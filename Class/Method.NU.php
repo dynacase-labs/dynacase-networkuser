@@ -3,7 +3,7 @@
  * Active Directory Group manipulation
  *
  * @author Anakeen 2007
- * @version $Id: Method.NU.php,v 1.6 2007/02/01 16:54:52 eric Exp $
+ * @version $Id: Method.NU.php,v 1.7 2007/02/02 13:56:40 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -112,10 +112,10 @@ function refreshFromAD() {
  */
  function getADDN($dn,&$info) {
    include_once("AD/Lib.AD.php");
-  $ldaphost=getParam("AD_HOST");
-  $ldapbase=getParam("AD_BASE");
-  $ldappw=getParam("AD_PASSWORD");
-  $ldapbinddn=getParam("AD_BINDDN");
+  $ldaphost=getParam("NU_LDAP_HOST");
+  $ldapbase=getParam("NU_LDAP_BASE");
+  $ldappw=getParam("NU_LDAP_PASSWORD");
+  $ldapbinddn=getParam("NU_LDAP_BINDDN");
 
   $info=array();
 
