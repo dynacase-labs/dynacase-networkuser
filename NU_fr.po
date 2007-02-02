@@ -1,0 +1,91 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: NetworkUser\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-02-02 14:18+0100\n"
+"PO-Revision-Date: 2007-02-02 14:24+0100\n"
+"Last-Translator: Eric Brison <eric.brison@anakeen.com>\n"
+"Language-Team: French <distrib@anakeen.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Active Directory"
+msgstr "Active Directory"
+
+msgid "Active Directory Authentification"
+msgstr "Anthentification Active Directory"
+
+msgid "Network users"
+msgstr "Utilisateurs réseaux"
+
+msgid "Network users and LDAP authentification"
+msgstr "Utilisateurs réseaux et authentification LDAP"
+
+#, c-format
+msgid "Unable to bind to LDAP server %s"
+msgstr "Impossible de joindre le serveur LDAP %s"
+
+#, c-format
+msgid "Unable to connect to LDAP server %s"
+msgstr "Impossible de se connecter au serveur LDAP %s"
+
+#, c-format
+msgid "cannot create user %s: %s"
+msgstr "ne peut créer l'utilisateur %s : %s"
+
+#, c-format
+msgid "user %s not exists for FREEDOM"
+msgstr "l'utilisateur %s existe pour FREEDOM"
+
+#, c-format
+msgid "Cannot find user [%s]"
+msgstr "Utilisateur inconnu [%s]"
+
+#, c-format
+msgid "Find mutiple user with same id  [%s]"
+msgstr "Plusieurs utilisateur avec le même identifiant trouvés [%s]"
+
+#, c-format
+msgid "Cannot find group [%s]"
+msgstr "Groupe inconnu [%s]"
+
+#, c-format
+msgid "Find mutiple grp with same login  [%s]"
+msgstr "Plusieurs groupes avec le même identifiant trouvés [%s]"
+
+#, c-format
+msgid "Cannot create LDAP %s [%s] : %s"
+msgstr "Ne peut créer LDAP %s [%s] : %s"
+
+msgid "host of the LDAP active directory"
+msgstr "adresse du serveur LDAP"
+
+msgid "base path of LDAP"
+msgstr "racine du LDAP"
+
+msgid "DN of user which can access of all user and group of the LDAP"
+msgstr "DN de l'utilisateur pouvant accéder au LDAP"
+
+msgid "password of the DN"
+msgstr "mot de passe du DN"
+
+msgid "kind of users LDAP for authentification"
+msgstr "type du LDAP : Active directory ou Posix"
+
+msgid "host of the ldap active directory"
+msgstr "adresse du serveur LDAP"
+
+msgid "base path of ldap"
+msgstr "chemin racine du LDAP"
+
+msgid ""
+"DN of user which can access of all user and group of the Active directory"
+msgstr "DN de l'utilisateur pouvant accéder au LDAP"
+
+msgid "password of then DN"
+msgstr "mot de passe du DN"

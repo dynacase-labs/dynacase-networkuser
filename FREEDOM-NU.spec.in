@@ -1,7 +1,7 @@
 #! /bin/rpm
 #
 #  File: 
-#  $Id: FREEDOM-NU.spec.in,v 1.2 2007/01/23 17:02:53 eric Exp $
+#  $Id: FREEDOM-NU.spec.in,v 1.3 2007/02/02 13:56:14 eric Exp $
 #
 #  This is the SPEC file for the What Users Module
 #  Anakeen What Application
@@ -95,8 +95,9 @@ ln -s ../%{dirname}/Method.*.php  .
 %dir %{destdir}/%{dirname}
 %{destdir}/%{dirname}/*
 %{destdir}/FDL/*
+%{destdir}/API/*php
 %{destdir}/ad.php
-#%{destdir}/locale/*
+%{destdir}/locale/*
 
 
 
