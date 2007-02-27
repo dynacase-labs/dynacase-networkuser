@@ -7,7 +7,7 @@
 #   as published by the Free Software Foundation; either version
 #   2 of the License, or (at your option) any later version.
 #
-AC_REVISION($Id: configure.in,v 1.1 2007/01/23 10:45:35 eric Exp $)
+AC_REVISION($Id: configure.in,v 1.2 2007/02/27 13:15:51 eric Exp $)
 dnl
 dnl Process this file with autoconf to produce a configure script.
 dnl
@@ -18,7 +18,7 @@ VERSION=`cat VERSION`
 AC_SUBST(RELEASE)
 RELEASE=`cat RELEASE`
 AC_SUBST(PACKAGE)
-PACKAGE=FREEDOM-AD
+PACKAGE=FREEDOM-NU
 
 ac_default_prefix=/home/httpd/what
 
@@ -53,4 +53,4 @@ AC_ARG_WITH(dbport,
 [  --with-dbport=port number  the database port (default 5432)], DBPORT=$withval)
 
 
-AC_OUTPUT(Makefile AD_init.php FREEDOM-AD.spec)
+AC_OUTPUT(Makefile NU_init.php FREEDOM-NU.spec)

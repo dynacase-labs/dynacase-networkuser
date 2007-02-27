@@ -1,7 +1,7 @@
 #! /bin/rpm
 #
 #  File: 
-#  $Id: FREEDOM-NU.spec.in,v 1.3 2007/02/02 13:56:14 eric Exp $
+#  $Id: FREEDOM-NU.spec.in,v 1.4 2007/02/27 13:15:51 eric Exp $
 #
 #  This is the SPEC file for the What Users Module
 #  Anakeen What Application
@@ -41,7 +41,7 @@
 %{?nhttpuser:%define httpuser %{nhttpuser}}
 %{?rpost:%define releasepostfix %{rpost}}
 
-%define dirname AD
+%define dirname NU
 Summary: Active directory functions to authenticate with Windows
 Name: @PACKAGE@
 Version: @VERSION@

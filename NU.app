@@ -1,6 +1,6 @@
 <?php
 // ---------------------------------------------------------------
-// $Id: NU.app,v 1.3 2007/02/02 13:56:40 eric Exp $
+// $Id: NU.app,v 1.4 2007/02/27 13:17:24 eric Exp $
 // $Source: /home/cvsroot/anakeen/freedom/networkuser/NU.app,v $
 // ---------------------------------------------------------------
 //  O   Anakeen - 2001
@@ -23,11 +23,11 @@
 // ---------------------------------------------------------------
 
 $app_desc = array (
-		   "name"	 =>"AD",		//Name
+		   "name"	 =>"NU",		//Name
 		   "short_name"	=>N_("Network users"),    	//Short name
 		   "description"=>N_("Network users and LDAP authentification"),  //long description
 		   "access_free"=>"Y",			//Access free ? (Y,N)
-		   "icon"	=>"ad.png",	//Icon
+		   "icon"	=>"nu.png",	//Icon
 		   "displayable"=>"N",			//Should be displayed on an app list (Y,N)
 		   "with_frame"	=>"N",			//Use multiframe ? (Y,N)
 		   "childof"	=>""		        // instance of FREEDOM GENERIC application	

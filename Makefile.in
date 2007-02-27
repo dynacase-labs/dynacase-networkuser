@@ -1,10 +1,10 @@
 # ============================================
-# $Id: Makefile.in,v 1.4 2007/02/27 13:05:45 eric Exp $
+# $Id: Makefile.in,v 1.5 2007/02/27 13:15:51 eric Exp $
 # ============================================
 PACKAGE = @PACKAGE@
 VERSION = @VERSION@
 utildir=@PUBRULE@
-appname = AD
+appname = NU
 pubdir = @prefix@
 srcdir = @srcdir@
 
@@ -19,12 +19,12 @@ SUBDIR= Class Api Images
 
 include $(utildir)/PubRule
 
-DISTFILES += $(SUBDIR) userad.ods \
+DISTFILES += $(SUBDIR) networkuser.ods \
             RELEASE VERSION 
 
 
 
-$(pubdir)/$(appname)/userad.ods : userad.ods
-	cp userad.ods $(pubdir)/$(appname)
+$(pubdir)/$(appname)/networkuser.ods : networkuser.ods
+	cp networkuser.ods $(pubdir)/$(appname)
 
-publish: $(pubdir)/$(appname)/userad.ods
+publish: $(pubdir)/$(appname)/networkuser.ods
