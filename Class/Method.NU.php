@@ -3,7 +3,7 @@
  * Active Directory Group manipulation
  *
  * @author Anakeen 2007
- * @version $Id: Method.NU.php,v 1.7 2007/02/02 13:56:40 eric Exp $
+ * @version $Id: Method.NU.php,v 1.8 2007/02/28 14:59:33 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -17,11 +17,10 @@
 function UseLdap() { return false; }
 
 function refreshFromAD() {
-  include_once("AD/Lib.AD.php");
-  include_once("AD/Lib.DocAD.php");
+  include_once("NU/Lib.AD.php");
+  include_once("NU/Lib.DocAD.php");
 
   $err=getLDAPFromLogin($this->getValue('us_login'),($this->doctype=='D'),$info);
-  //var_dump (xdebug_get_function_stack());		 
 
   $ldapmap=$this->getMapAttributes();
   //   print_r2($ldapmap);
@@ -38,8 +37,23 @@ function refreshFromAD() {
   }
   $name=$this->getValue("GRP_NAME");
   if ($name=="") $this->setValue("GRP_NAME",$this->getValue("US_LOGIN"));
-  $this->modify();
+  $err=$this->modify();
+  
 
+  $user=$this->getWUser();
+  if ($user) {
+    if ($user->isgroup=='Y') {
+      $user->firstname="";
+      $user->lastname=$this->getValue("grp_name");    
+    } else {  
+      $user->firstname=$this->getValue("us_fname");
+      $user->lastname=$this->getValue("us_lname");
+    }
+    $user->mail=$this->getValue("us_mail");
+    $user->modify(true);
+  }
+
+  // insert in groups
   $dnmembers=$info["memberof"];
   if ($dnmembers) {
     if (! is_array($dnmembers)) $dnmembers=array($dnmembers);
@@ -95,6 +109,7 @@ function refreshFromAD() {
     }
   }
 
+   
   return $err;
 }
 
@@ -111,7 +126,7 @@ function refreshFromAD() {
  * @return string error message - empty means no error
  */
  function getADDN($dn,&$info) {
-   include_once("AD/Lib.AD.php");
+   include_once("NU/Lib.AD.php");
   $ldaphost=getParam("NU_LDAP_HOST");
   $ldapbase=getParam("NU_LDAP_BASE");
   $ldappw=getParam("NU_LDAP_PASSWORD");

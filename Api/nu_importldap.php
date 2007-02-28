@@ -3,7 +3,7 @@
  * Import Users andgrops from a Active Directory
  *
  * @author Anakeen 2007
- * @version $Id: nu_importldap.php,v 1.7 2007/02/02 13:56:40 eric Exp $
+ * @version $Id: nu_importldap.php,v 1.8 2007/02/28 14:59:33 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  * @subpackage 
@@ -18,8 +18,8 @@
 
 include_once("FDL/Lib.Attr.php");
 include_once("FDL/Class.DocFam.php");
-include_once("AD/Lib.AD.php");
-include_once("AD/Lib.DocAD.php");
+include_once("NU/Lib.AD.php");
+include_once("NU/Lib.DocAD.php");
 
 $dbaccess=$appl->GetParam("FREEDOM_DB");
 if ($dbaccess == "") {

@@ -3,14 +3,14 @@
  *  LDAP functions
  *
  * @author Anakeen 2007
- * @version $Id: Lib.NU.php,v 1.6 2007/02/02 13:56:40 eric Exp $
+ * @version $Id: Lib.NU.php,v 1.7 2007/02/28 14:59:33 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
  /**
  */
 
-include_once("AD/Lib.ConfLDAP.php");
+include_once("NU/Lib.ConfLDAP.php");
 /**
  * return LDAP AD information from SID
  * @param string $sid ascii unique id
@@ -36,7 +36,7 @@ function getAdInfoFromSid($sid,&$info,$isgroup) {
  * @return string error message - empty means no error
  */
 function getLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$info) {
-  include_once("AD/Lib.AD.php");
+  include_once("NU/Lib.AD.php");
   $ldaphost=getParam("NU_LDAP_HOST");
   $ldapbase=getParam("NU_LDAP_BASE");
   $ldappw=getParam("NU_LDAP_PASSWORD");
@@ -96,8 +96,73 @@ function getLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$info) {
   
 }
 /**
+ * serach LDAP AD information which match the $login
+ * @param string $login connection identificator
+ * @param array &$info ldap information
+ * @return string error message - empty means no error
+ */
+function searchLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$tinfo) {
+  include_once("NU/Lib.AD.php");
+  $ldaphost=getParam("NU_LDAP_HOST");
+  $ldapbase=getParam("NU_LDAP_BASE");
+  $ldappw=getParam("NU_LDAP_PASSWORD");
+  $ldapbinddn=getParam("NU_LDAP_BINDDN");
+
+  $tinfo=array();
+
+  $ds=ldap_connect($ldaphost);  // must be a valid LDAP server!
+
+  if ($ds) {
+    $r=ldap_bind($ds,$ldapbinddn,$ldappw);  
+
+    // Search login entry
+    $filter=sprintf("(&(objectClass=%s)(%s=*%s*))",
+		    $ldapclass,$ldapbindloginattribute,$login);
+    $sr=ldap_search($ds, $ldapbase, $filter); 
+     
+    $entry= ldap_first_entry($ds, $sr);
+
+    while( $entry ) {
+      //      print "<pre>";print_r($info);print "</pre>";
+      $info0 = ldap_get_attributes( $ds, $entry );
+      $info=array();
+      //      print_r2($attrs);
+      foreach ($info0 as $k=>$v) {
+	if (! is_numeric($k)) {
+	  //print "$k:[".print_r2(ldap_get_values($ds, $entry, $k))."]";
+	  if ($k=="objectsid") {
+	    // get binary value from ldap and decode it
+	    $values = ldap_get_values_len($ds, $entry,$k);	   
+	    $info[$k]=sid_decode($values[0]);
+	  } else {
+	    if ($v["count"]==1)  $info[$k]=$v[0];
+	    else {
+	      //	    unset($v["count"]);
+	      if (is_array($v))  unset($v["count"]);   
+	      $info[$k]=$v;
+	    }
+	  }
+	}
+      }
+      $tinfo[]=$info;
+      $entry=ldap_next_entry( $ds, $entry );
+    }
+
+    
+    ldap_close($ds);
+
+  } else {
+    $err=sprintf(_("Unable to connect to LDAP server %s"),$ldaphost);
+  }
+
+  return $err;
+  
+}
+
+/**
  * return LDAP AD information from the $login
  * @param string $login connection identificator
+ * @param bool $isgroup true if group, false if user
  * @param array &$info ldap information
  * @return string error message - empty means no error
  */
@@ -113,9 +178,13 @@ function getLDAPFromLogin($login,$isgroup,&$info) {
   return getLDAPFrom($login,$ldapclass,$ldapattr,$info);
   
 }
+
+
+
 /**
  * return LDAP AD information from the $login
  * @param string $login connection identificator
+ * @param bool $isgroup true if group, false if user
  * @param array &$info ldap information
  * @return string error message - empty means no error
  */
@@ -131,6 +200,28 @@ function getLDAPFromUid($uid,$isgroup,&$info) {
   return getLDAPFrom($uid,$ldapclass,$ldapattr,$info);
   
 }
+
+/**
+ * return array LDAP AD information which match the $login
+ * @param string $login connection identificator
+ * @param bool $isgroup true if group, false if user
+ * @param array &$info array of ldap information
+ * @return string error message - empty means no error
+ */
+function searchLDAPFromLogin($login,$isgroup,&$info) {
+  $conf=getLDAPconf(getParam("NU_LDAP_KIND"));
+  if ($isgroup) {
+    $ldapattr=$conf["LDAP_GROUPLOGIN"];
+    $ldapclass=$conf["LDAP_GROUPCLASS"];
+  } else {
+    $ldapattr=$conf["LDAP_USERLOGIN"];
+    $ldapclass=$conf["LDAP_USERCLASS"];
+  }
+  return searchLDAPFrom($login,$ldapclass,$ldapattr,$info);
+  
+}
+
+
 /**
  * encode Active Directory session id in binary format
  * @param string $sid

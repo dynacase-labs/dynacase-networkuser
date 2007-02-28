@@ -5,7 +5,7 @@
  * All HTTP requests call index.php to execute action within application
  *
  * @author Anakeen 2007
- * @version $Id: nu.php,v 1.4 2007/01/29 16:58:02 eric Exp $
+ * @version $Id: nu.php,v 1.5 2007/02/28 14:59:33 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package WHAT
  * @subpackage 
@@ -52,10 +52,10 @@ if ($login) {
 	$action->Set("",$core);
 	$action->user=new User("",1); //create user as admin
    
-	$WHATUSER->firstname='Unknown';
+	$WHATUSER->firstname='Unknown Test';
 	$WHATUSER->lastname='To Define';
 	$WHATUSER->login=$login;
-	$WHATUSER->password_new=uniqid("ad");
+	$WHATUSER->password_new=uniqid("nu");
 	$WHATUSER->iddomain="0";
 	$WHATUSER->famid="LDAPUSER";
 	$err=$WHATUSER->Add();
@@ -66,10 +66,12 @@ if ($login) {
       
 	include_once("FDL/Class.DocFam.php");
 	$dbaccess=getParam("FREEDOM_DB");
-	$WHATUSER=new_doc($dbaccess,$WHATUSER->fid);
-	$WHATUSER->refreshFromAD();
-	$WHATUSER->postModify();
-      
+	$du=new_doc($dbaccess,$WHATUSER->fid);
+	$du->setValue("us_whatid",$WHATUSER->id);
+	$du->modify();
+	$err=$du->refreshFromAD();
+	$core->session->close();
+       
       } else {
 	print sprintf(_("user %s not exists for FREEDOM"),$login);      
 	exit(1);

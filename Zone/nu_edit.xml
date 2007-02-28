@@ -1,0 +1,6 @@
+<H1>[TEXT:Create User From LDAP]</H1>
+
+[V_LDAP_GETINFO]
+[V_US_LOGIN]
+[V_US_FNAME]
+[V_US_LNAME]
