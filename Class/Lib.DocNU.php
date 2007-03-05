@@ -3,7 +3,7 @@
  *  LDAP Document methods
  *
  * @author Anakeen 2007
- * @version $Id: Lib.DocNU.php,v 1.7 2007/02/28 14:59:33 eric Exp $
+ * @version $Id: Lib.DocNU.php,v 1.8 2007/03/05 13:43:07 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -12,7 +12,7 @@
 
 include_once("FDL/Class.Doc.php");
 include_once("FDL/Lib.Dir.php");
-include_once("NU/Lib.AD.php");
+include_once("NU/Lib.NU.php");
 
 /**
  * return document referenced by Active Directory sid or OpenLDAP uid

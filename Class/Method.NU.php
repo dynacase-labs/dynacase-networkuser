@@ -3,7 +3,7 @@
  * Active Directory Group manipulation
  *
  * @author Anakeen 2007
- * @version $Id: Method.NU.php,v 1.8 2007/02/28 14:59:33 eric Exp $
+ * @version $Id: Method.NU.php,v 1.9 2007/03/05 13:43:07 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -17,8 +17,8 @@
 function UseLdap() { return false; }
 
 function refreshFromAD() {
-  include_once("NU/Lib.AD.php");
-  include_once("NU/Lib.DocAD.php");
+  include_once("NU/Lib.NU.php");
+  include_once("NU/Lib.DocNU.php");
 
   $err=getLDAPFromLogin($this->getValue('us_login'),($this->doctype=='D'),$info);
 
@@ -45,11 +45,12 @@ function refreshFromAD() {
     if ($user->isgroup=='Y') {
       $user->firstname="";
       $user->lastname=$this->getValue("grp_name");    
+      $user->mail=$this->getValue("grp_mail");
     } else {  
       $user->firstname=$this->getValue("us_fname");
       $user->lastname=$this->getValue("us_lname");
+      $user->mail=$this->getValue("us_mail");
     }
-    $user->mail=$this->getValue("us_mail");
     $user->modify(true);
   }
 
@@ -126,7 +127,7 @@ function refreshFromAD() {
  * @return string error message - empty means no error
  */
  function getADDN($dn,&$info) {
-   include_once("NU/Lib.AD.php");
+   include_once("NU/Lib.NU.php");
   $ldaphost=getParam("NU_LDAP_HOST");
   $ldapbase=getParam("NU_LDAP_BASE");
   $ldappw=getParam("NU_LDAP_PASSWORD");
@@ -137,6 +138,8 @@ function refreshFromAD() {
   $ds=ldap_connect($ldaphost);  // must be a valid LDAP server!
 
   if ($ds) {
+    ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
+    ldap_set_option($ds, LDAP_OPT_REFERRALS, 0);
     $r=ldap_bind($ds,$ldapbinddn,$ldappw);  
 
     // Search login entry

@@ -3,7 +3,7 @@
  *  LDAP functions
  *
  * @author Anakeen 2007
- * @version $Id: Lib.NU.php,v 1.7 2007/02/28 14:59:33 eric Exp $
+ * @version $Id: Lib.NU.php,v 1.8 2007/03/05 13:43:07 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -36,7 +36,7 @@ function getAdInfoFromSid($sid,&$info,$isgroup) {
  * @return string error message - empty means no error
  */
 function getLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$info) {
-  include_once("NU/Lib.AD.php");
+  include_once("NU/Lib.NU.php");
   $ldaphost=getParam("NU_LDAP_HOST");
   $ldapbase=getParam("NU_LDAP_BASE");
   $ldappw=getParam("NU_LDAP_PASSWORD");
@@ -48,6 +48,8 @@ function getLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$info) {
   $ds=ldap_connect($ldaphost);  // must be a valid LDAP server!
 
   if ($ds) {
+    ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
+    ldap_set_option($ds, LDAP_OPT_REFERRALS, 0);
     $r=ldap_bind($ds,$ldapbinddn,$ldappw);  
 
     // Search login entry
@@ -102,7 +104,7 @@ function getLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$info) {
  * @return string error message - empty means no error
  */
 function searchLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$tinfo) {
-  include_once("NU/Lib.AD.php");
+  include_once("NU/Lib.NU.php");
   $ldaphost=getParam("NU_LDAP_HOST");
   $ldapbase=getParam("NU_LDAP_BASE");
   $ldappw=getParam("NU_LDAP_PASSWORD");
@@ -112,12 +114,19 @@ function searchLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$tinfo) {
 
   $ds=ldap_connect($ldaphost);  // must be a valid LDAP server!
 
-  if ($ds) {
+  if ($ds) { 
+    ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
+    ldap_set_option($ds, LDAP_OPT_REFERRALS, 0);
+
     $r=ldap_bind($ds,$ldapbinddn,$ldappw);  
 
     // Search login entry
-    $filter=sprintf("(&(objectClass=%s)(%s=*%s*))",
-		    $ldapclass,$ldapbindloginattribute,$login);
+    if ($login) {
+      $filter=sprintf("(&(objectClass=%s)(|(cn=*%s*)(%s=*%s*)))",
+		      $ldapclass,$login,$ldapbindloginattribute,$login);
+    } else {
+      $filter=sprintf("(objectClass=%s)", $ldapclass);      
+    }
     $sr=ldap_search($ds, $ldapbase, $filter); 
      
     $entry= ldap_first_entry($ds, $sr);

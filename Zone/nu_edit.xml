@@ -1,6 +1,11 @@
 <H1>[TEXT:Create User From LDAP]</H1>
 
-[V_LDAP_GETINFO]
+<fieldset style="display:inline;width:100px"><legend>[TEXT:Search]</legend>
+[TEXT:Name or login] : [V_LDAP_GETINFO]
+</fieldset>
+
+<fieldset style="display:inline;width:100px"><legend>[TEXT:Result]</legend>
 [V_US_LOGIN]
 [V_US_FNAME]
 [V_US_LNAME]
+</fieldset>

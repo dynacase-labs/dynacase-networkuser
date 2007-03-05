@@ -3,7 +3,7 @@
  * Active Directory User manipulation
  *
  * @author Anakeen 2007
- * @version $Id: Method.LDAPUser.php,v 1.5 2007/02/28 14:59:33 eric Exp $
+ * @version $Id: Method.LDAPUser.php,v 1.6 2007/03/05 13:43:07 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -21,9 +21,6 @@ function postModify() {
 }
 
 
-function SpecRefresh() {
-  // nothing
-}
 
 function postCreated() {
   // ldapsearch -x -w anakeen -D "cn=administrateur,cn=users,dc=ad,dc=tlse,dc=i-cesam,dc=com" -b "dc=ad,dc=tlse,dc=i-cesam,dc=com" -h ad.tlse.i-cesam.com 
@@ -54,6 +51,6 @@ function postCreated() {
   
 }
 function nu_edit() {
-  $this->editattr();
+  $this->editattr(true);
 }
 ?>

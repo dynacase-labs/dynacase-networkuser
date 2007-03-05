@@ -3,7 +3,7 @@
  * Import Users andgrops from a Active Directory
  *
  * @author Anakeen 2007
- * @version $Id: nu_importldap.php,v 1.8 2007/02/28 14:59:33 eric Exp $
+ * @version $Id: nu_importldap.php,v 1.9 2007/03/05 13:43:07 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  * @subpackage 
@@ -18,8 +18,7 @@
 
 include_once("FDL/Lib.Attr.php");
 include_once("FDL/Class.DocFam.php");
-include_once("NU/Lib.AD.php");
-include_once("NU/Lib.DocAD.php");
+include_once("NU/Lib.DocNU.php");
 
 $dbaccess=$appl->GetParam("FREEDOM_DB");
 if ($dbaccess == "") {
@@ -52,6 +51,8 @@ function searchinAD($filter,$ldapuniqid,&$info) {
   $ds=ldap_connect($ldaphost);  // must be a valid LDAP server!
 
   if ($ds) {
+    ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
+    ldap_set_option($ds, LDAP_OPT_REFERRALS, 0);
     $r=ldap_bind($ds,$ldapbinddn,$ldappw);  
     if ($r) {
       // Search login entry
