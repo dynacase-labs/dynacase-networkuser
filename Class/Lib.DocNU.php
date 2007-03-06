@@ -3,7 +3,7 @@
  *  LDAP Document methods
  *
  * @author Anakeen 2007
- * @version $Id: Lib.DocNU.php,v 1.8 2007/03/05 13:43:07 eric Exp $
+ * @version $Id: Lib.DocNU.php,v 1.9 2007/03/06 10:04:35 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -32,7 +32,7 @@ function getDocFromUniqId($sid) {
   return false;  
 }
     
-function createADFamily($sid,&$doc,$family,$isgroup) {
+function createLDAPFamily($sid,&$doc,$family,$isgroup) {
   $err=getAdInfoFromSid($sid,$infogrp,$isgroup);
  
   if ($err=="") {
@@ -59,22 +59,22 @@ function createADFamily($sid,&$doc,$family,$isgroup) {
       $gfid=$g->fid;
       $dbaccess=getParam("FREEDOM_DB");
       $doc=new_doc($dbaccess,$gfid);
-      $doc->refreshFromAD();
+      $doc->refreshFromLDAP();
     }
   }
   if ($err) return sprintf(_("Cannot create LDAP %s [%s] : %s"),
 			   $family,$sid,$err);
 }
 
-function createADGroup($sid,&$doc) {
+function createLDAPGroup($sid,&$doc) {
   if (!$sid) return false;
-  $err=createADFamily($sid,$doc,"LDAPGROUP",true);
+  $err=createLDAPFamily($sid,$doc,"LDAPGROUP",true);
   return $err;
 }
 
-function createADUser($sid,&$doc) { 
+function createLDAPUser($sid,&$doc) { 
   if (!$sid) return false;
-  $err=createADFamily($sid,$doc,"LDAPUSER",false);
+  $err=createLDAPFamily($sid,$doc,"LDAPUSER",false);
   return $err;
 }
 

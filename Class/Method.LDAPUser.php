@@ -3,7 +3,7 @@
  * Active Directory User manipulation
  *
  * @author Anakeen 2007
- * @version $Id: Method.LDAPUser.php,v 1.6 2007/03/05 13:43:07 eric Exp $
+ * @version $Id: Method.LDAPUser.php,v 1.7 2007/03/06 10:04:35 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -43,7 +43,7 @@ function postCreated() {
 
 	$this->setValue("US_WHATID",$this->wuser->id);
 	$this->modify(false,array("us_whatid"));
-	$this->refreshFromAD();
+	$this->refreshFromLDAP();
 	
 	$err=parent::RefreshDocUser();// refresh from core database 
     }

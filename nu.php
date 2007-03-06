@@ -5,7 +5,7 @@
  * All HTTP requests call index.php to execute action within application
  *
  * @author Anakeen 2007
- * @version $Id: nu.php,v 1.5 2007/02/28 14:59:33 eric Exp $
+ * @version $Id: nu.php,v 1.6 2007/03/06 10:04:35 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package WHAT
  * @subpackage 
@@ -69,7 +69,7 @@ if ($login) {
 	$du=new_doc($dbaccess,$WHATUSER->fid);
 	$du->setValue("us_whatid",$WHATUSER->id);
 	$du->modify();
-	$err=$du->refreshFromAD();
+	$err=$du->refreshFromLDAP();
 	$core->session->close();
        
       } else {
@@ -95,7 +95,7 @@ if (! $core) {
 include_once("FDL/Class.DocFam.php");
 $dbaccess=getParam("FREEDOM_DB");
 $WHATUSER=new_doc($dbaccess,$WHATUSER->fid);
-$WHATUSER->refreshFromAD();
+$WHATUSER->refreshFromLDAP();
 
 
 

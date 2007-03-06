@@ -3,7 +3,7 @@
  * Active Directory Group manipulation
  *
  * @author Anakeen 2007
- * @version $Id: Method.NU.php,v 1.9 2007/03/05 13:43:07 eric Exp $
+ * @version $Id: Method.NU.php,v 1.10 2007/03/06 10:04:35 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -16,7 +16,7 @@
    */
 function UseLdap() { return false; }
 
-function refreshFromAD() {
+function refreshFromLDAP() {
   include_once("NU/Lib.NU.php");
   include_once("NU/Lib.DocNU.php");
 
@@ -61,7 +61,7 @@ function refreshFromAD() {
     foreach ($dnmembers as $k=>$dnmember) {
       $err=$this->getADDN($dnmember,$infogrp);
       $gid=$infogrp["objectsid"];
-      $err=createADGroup($gid,$dg);      
+      $err=createLDAPGroup($gid,$dg);      
       if ($err=="") {
 	$err=$dg->addFile($this->initid);
       }
@@ -77,7 +77,7 @@ function refreshFromAD() {
       //      print "<p>Find2 Primary group:$dnmember</p>";
       $basesid=substr($info["objectsid"],0,strrpos($info["objectsid"],"-"));
       $gid=$basesid."-".$pgid;
-      $err=createADGroup($gid,$dg);    
+      $err=createLDAPGroup($gid,$dg);    
       if ($err=="") {
 	$err=$dg->addFile($this->initid);
       }
@@ -88,7 +88,7 @@ function refreshFromAD() {
   if ($this->doctype != 'D') { // for user posixAccount
     $gid=$info["gidnumber"];
     if ($gid) {
-      $err=createADGroup($gid,$dg);    
+      $err=createLDAPGroup($gid,$dg);    
       if ($err=="") {
 	$err=$dg->addFile($this->initid);
       }      

@@ -3,7 +3,7 @@
  *  LDAP functions
  *
  * @author Anakeen 2007
- * @version $Id: Lib.NU.php,v 1.8 2007/03/05 13:43:07 eric Exp $
+ * @version $Id: Lib.NU.php,v 1.9 2007/03/06 10:04:35 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -50,8 +50,8 @@ function getLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$info) {
   if ($ds) {
     ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
     ldap_set_option($ds, LDAP_OPT_REFERRALS, 0);
-    $r=ldap_bind($ds,$ldapbinddn,$ldappw);  
-
+    $r=@ldap_bind($ds,$ldapbinddn,$ldappw);  
+    if (!$r) return ldap_error($ds);
     // Search login entry
     $filter=sprintf("(&(objectClass=%s)(%s=%s))",
 		    $ldapclass,$ldapbindloginattribute,$login);
@@ -118,8 +118,8 @@ function searchLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$tinfo) {
     ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
     ldap_set_option($ds, LDAP_OPT_REFERRALS, 0);
 
-    $r=ldap_bind($ds,$ldapbinddn,$ldappw);  
-
+    $r=@ldap_bind($ds,$ldapbinddn,$ldappw);  
+    if (!$r) return ldap_error($ds);
     // Search login entry
     if ($login) {
       $filter=sprintf("(&(objectClass=%s)(|(cn=*%s*)(%s=*%s*)))",
