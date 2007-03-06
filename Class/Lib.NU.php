@@ -3,7 +3,7 @@
  *  LDAP functions
  *
  * @author Anakeen 2007
- * @version $Id: Lib.NU.php,v 1.9 2007/03/06 10:04:35 eric Exp $
+ * @version $Id: Lib.NU.php,v 1.10 2007/03/06 16:29:36 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -53,6 +53,8 @@ function getLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$info) {
     $r=@ldap_bind($ds,$ldapbinddn,$ldappw);  
     if (!$r) return ldap_error($ds);
     // Search login entry
+    if (!seems_utf8($login)) $login=utf8_encode($login);
+
     $filter=sprintf("(&(objectClass=%s)(%s=%s))",
 		    $ldapclass,$ldapbindloginattribute,$login);
     $sr=ldap_search($ds, $ldapbase, $filter); 

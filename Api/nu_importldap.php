@@ -3,7 +3,7 @@
  * Import Users andgrops from a Active Directory
  *
  * @author Anakeen 2007
- * @version $Id: nu_importldap.php,v 1.10 2007/03/06 10:04:35 eric Exp $
+ * @version $Id: nu_importldap.php,v 1.11 2007/03/06 16:29:36 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  * @subpackage 
@@ -11,14 +11,17 @@
  /**
  */
 
-
-
 // refreah for a classname
 // use this only if you have changed title attributes
 
 include_once("FDL/Lib.Attr.php");
 include_once("FDL/Class.DocFam.php");
 include_once("NU/Lib.DocNU.php");
+
+
+define("SKIPCOLOR",'[1;31;40m');
+define("UPDTCOLOR",'[1;32;40m');
+define("STOPCOLOR",'[0m');
 
 $dbaccess=$appl->GetParam("FREEDOM_DB");
 if ($dbaccess == "") {
@@ -39,7 +42,7 @@ if (! $conf) {
  * @param array &$info ldap information
  * @return string error message - empty means no error
  */
-function searchinAD($filter,$ldapuniqid,&$info) {
+function searchinLDAP($filter,$ldapuniqid,&$info) {
   $ldaphost=getParam("NU_LDAP_HOST");
   $ldapbase=getParam("NU_LDAP_BASE");
   $ldappw=getParam("NU_LDAP_PASSWORD");
@@ -103,39 +106,51 @@ function searchinAD($filter,$ldapuniqid,&$info) {
   
 }
 
-//$err=searchinAD("objectclass=group",$groups);
-$err=searchinAD("objectclass=".$conf["LDAP_GROUPCLASS"],$conf["LDAP_GROUPUID"],$groups);
+//$err=searchinLDAP("objectclass=group",$groups);
+$err=searchinLDAP("objectclass=".$conf["LDAP_GROUPCLASS"],$conf["LDAP_GROUPUID"],$groups);
 if ($err) print "ERROR:$err\n";
 //print_r(array_keys($groups));
 //print_r(($groups));
 
 foreach ($groups as $sid=>$group) {
-  print "\nSearch group $sid...";
+  print "Search group $sid...";
   $doc=getDocFromUniqId($sid);
 
   if (! $doc) {
-    $err=createLDAPGroup($sid,$doc);    
-    print "Create group".$doc->title."[$err]\n";
+    $err=createLDAPGroup($sid,$doc);
+    if ($err!="") print SKIPCOLOR;
+    print "Create Group ".$doc->title;
+    if ($err!="") print "[$err]".STOPCOLOR;
+    print "\n";
   } else  {
     $err=$doc->refreshFromLDAP();
     if ($err=="") $doc->postModify();
-    print "Refresh ".$doc->title."[$err]\n";
+    if ($err!="") print SKIPCOLOR;
+    print "Refresh Group ".$doc->id.$doc->title;
+    if ($err!="") print "[$err]".STOPCOLOR;
+    print "\n";
   }
 }
 
-//$err=searchinAD("objectclass=user",$users);
-$err=searchinAD("objectclass=".$conf["LDAP_USERCLASS"],$conf["LDAP_USERUID"],$users);
+//$err=searchinLDAP("objectclass=user",$users);
+$err=searchinLDAP("objectclass=".$conf["LDAP_USERCLASS"],$conf["LDAP_USERUID"],$users);
 //print_r(($users));
 foreach ($users as $sid=>$user) {
-  print "\nSearch user $sid...";
+  print "Search user $sid...";
   $doc=getDocFromUniqId($sid);
   if (! $doc) {
-    $err=createLDAPUser($sid,$doc);    
-    print "Create User".$doc->title."[$err]\n";
+    $err=createLDAPUser($sid,$doc);   
+    if ($err!="") print SKIPCOLOR; 
+    print "Create User ".$doc->title;
+    if ($err!="") print "[$err]".STOPCOLOR;
+    print "\n";
   } else  {
     $err=$doc->refreshFromLDAP();
     if ($err=="") $doc->postModify();
-    print "Refresh ".$doc->title."[$err]\n";
+    if ($err!="") print SKIPCOLOR; 
+    print "Refresh ".$doc->title;
+    if ($err!="") print "[$err]".STOPCOLOR;
+    print "\n";
   }
 }
 

@@ -3,7 +3,7 @@
  *  LDAP Document methods
  *
  * @author Anakeen 2007
- * @version $Id: Lib.DocNU.php,v 1.9 2007/03/06 10:04:35 eric Exp $
+ * @version $Id: Lib.DocNU.php,v 1.10 2007/03/06 16:29:36 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -24,9 +24,9 @@ function getDocFromUniqId($sid) {
   $dbaccess=getParam("FREEDOM_DB");
   $filter=array("ldap_uniqid='".pg_escape_string($sid)."'");
   $ls = getChildDoc($dbaccess, 0 ,0,1, $filter, 1, "LIST","LDAPGROUP");
-  if (count($ls) == 1) return $ls[0];
+  if (count($ls) > 0) return $ls[0];
   $ls = getChildDoc($dbaccess, 0 ,0,1, $filter, 1, "LIST","LDAPUSER");
-  if (count($ls) == 1) return $ls[0];
+  if (count($ls) > 0) return $ls[0];
 
 
   return false;  
@@ -40,7 +40,7 @@ function createLDAPFamily($sid,&$doc,$family,$isgroup) {
     $alogin=strtolower(getLDAPconf(getParam("NU_LDAP_KIND"),
 				   ($isgroup)?"LDAP_GROUPLOGIN":"LDAP_USERLOGIN"));
   
-
+    if (seems_utf8($infogrp[$alogin])) $infogrp[$alogin]=utf8_decode($infogrp[$alogin]);
     $g->SetLoginName($infogrp[$alogin]);
     if (! $g->isAffected()) {
       foreach ($infogrp as $k=>$v)  if (seems_utf8($v)) $infogrp[$k]=utf8_decode($v);
