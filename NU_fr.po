@@ -6,25 +6,36 @@ msgid ""
 msgstr ""
 "Project-Id-Version: NetworkUser\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-02 14:18+0100\n"
-"PO-Revision-Date: 2007-02-02 14:24+0100\n"
+"POT-Creation-Date: 2007-03-07 11:30+0100\n"
+"PO-Revision-Date: 2007-03-07 11:31+0100\n"
 "Last-Translator: Eric Brison <eric.brison@anakeen.com>\n"
 "Language-Team: French <distrib@anakeen.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-msgid "Active Directory"
-msgstr "Active Directory"
+msgid "Create User From LDAP"
+msgstr "Créer un utilisateur à partir de l'annuaire LDAP"
 
-msgid "Active Directory Authentification"
-msgstr "Anthentification Active Directory"
+msgid "Name or login"
+msgstr "Nom ou login"
+
+msgid "Result"
+msgstr "Résultat"
 
 msgid "Network users"
 msgstr "Utilisateurs réseaux"
 
 msgid "Network users and LDAP authentification"
 msgstr "Utilisateurs réseaux et authentification LDAP"
+
+#, c-format
+msgid "cannot create user %s: %s"
+msgstr "ne peut créer l'utilisateur %s : %s"
+
+#, c-format
+msgid "user %s not exists for FREEDOM"
+msgstr "l'utilisateur %s existe pour FREEDOM"
 
 #, c-format
 msgid "Unable to bind to LDAP server %s"
@@ -35,12 +46,8 @@ msgid "Unable to connect to LDAP server %s"
 msgstr "Impossible de se connecter au serveur LDAP %s"
 
 #, c-format
-msgid "cannot create user %s: %s"
-msgstr "ne peut créer l'utilisateur %s : %s"
-
-#, c-format
-msgid "user %s not exists for FREEDOM"
-msgstr "l'utilisateur %s existe pour FREEDOM"
+msgid "Cannot create LDAP %s [%s] : %s"
+msgstr "Ne peut créer LDAP %s [%s] : %s"
 
 #, c-format
 msgid "Cannot find user [%s]"
@@ -58,11 +65,7 @@ msgstr "Groupe inconnu [%s]"
 msgid "Find mutiple grp with same login  [%s]"
 msgstr "Plusieurs groupes avec le même identifiant trouvés [%s]"
 
-#, c-format
-msgid "Cannot create LDAP %s [%s] : %s"
-msgstr "Ne peut créer LDAP %s [%s] : %s"
-
-msgid "host of the LDAP active directory"
+msgid "host of the LDAP"
 msgstr "adresse du serveur LDAP"
 
 msgid "base path of LDAP"
@@ -77,15 +80,21 @@ msgstr "mot de passe du DN"
 msgid "kind of users LDAP for authentification"
 msgstr "type du LDAP : Active directory ou Posix"
 
-msgid "host of the ldap active directory"
-msgstr "adresse du serveur LDAP"
+#~ msgid "Active Directory"
+#~ msgstr "Active Directory"
 
-msgid "base path of ldap"
-msgstr "chemin racine du LDAP"
+#~ msgid "Active Directory Authentification"
+#~ msgstr "Anthentification Active Directory"
 
-msgid ""
-"DN of user which can access of all user and group of the Active directory"
-msgstr "DN de l'utilisateur pouvant accéder au LDAP"
+#~ msgid "host of the ldap active directory"
+#~ msgstr "adresse du serveur LDAP"
 
-msgid "password of then DN"
-msgstr "mot de passe du DN"
+#~ msgid "base path of ldap"
+#~ msgstr "chemin racine du LDAP"
+
+#~ msgid ""
+#~ "DN of user which can access of all user and group of the Active directory"
+#~ msgstr "DN de l'utilisateur pouvant accéder au LDAP"
+
+#~ msgid "password of then DN"
+#~ msgstr "mot de passe du DN"

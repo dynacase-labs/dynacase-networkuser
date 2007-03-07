@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WORKSPACE\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-02 14:18+0100\n"
+"POT-Creation-Date: 2007-03-07 11:30+0100\n"
 "PO-Revision-Date: 2001-03-14 00:54-0500\n"
 "Last-Translator: Eric Brison <eric.brison@anakeen.com>\n"
 "Language-Team: english-anakeen <distrib@anakeen.com>\n"
@@ -15,16 +15,30 @@ msgstr ""
 "Content-Transfer-Encoding: 8-bit\n"
 "\n"
 
-msgid "Active Directory"
+msgid "Create User From LDAP"
 msgstr ""
 
-msgid "Active Directory Authentification"
+msgid "Search"
+msgstr ""
+
+msgid "Name or login"
+msgstr ""
+
+msgid "Result"
 msgstr ""
 
 msgid "Network users"
 msgstr ""
 
 msgid "Network users and LDAP authentification"
+msgstr ""
+
+#, c-format
+msgid "cannot create user %s: %s"
+msgstr ""
+
+#, c-format
+msgid "user %s not exists for FREEDOM"
 msgstr ""
 
 #, c-format
@@ -36,11 +50,7 @@ msgid "Unable to connect to LDAP server %s"
 msgstr ""
 
 #, c-format
-msgid "cannot create user %s: %s"
-msgstr ""
-
-#, c-format
-msgid "user %s not exists for FREEDOM"
+msgid "Cannot create LDAP %s [%s] : %s"
 msgstr ""
 
 #, c-format
@@ -59,11 +69,7 @@ msgstr ""
 msgid "Find mutiple grp with same login  [%s]"
 msgstr ""
 
-#, c-format
-msgid "Cannot create LDAP %s [%s] : %s"
-msgstr ""
-
-msgid "host of the LDAP active directory"
+msgid "host of the LDAP"
 msgstr ""
 
 msgid "base path of LDAP"
@@ -76,17 +82,4 @@ msgid "password of the DN"
 msgstr ""
 
 msgid "kind of users LDAP for authentification"
-msgstr ""
-
-msgid "host of the ldap active directory"
-msgstr ""
-
-msgid "base path of ldap"
-msgstr ""
-
-msgid ""
-"DN of user which can access of all user and group of the Active directory"
-msgstr ""
-
-msgid "password of then DN"
 msgstr ""
