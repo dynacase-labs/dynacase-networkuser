@@ -3,7 +3,7 @@
  * Active Directory Group manipulation
  *
  * @author Anakeen 2007
- * @version $Id: Method.NU.php,v 1.10 2007/03/06 10:04:35 eric Exp $
+ * @version $Id: Method.NU.php,v 1.11 2007/03/07 15:02:41 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -40,6 +40,9 @@ function refreshFromLDAP() {
   $err=$this->modify();
   
 
+  $t_docgroupid=$this->getTValue("us_idgroup"); // memo group of the user
+  $tnew_docgroupid=array();
+
   $user=$this->getWUser();
   if ($user) {
     if ($user->isgroup=='Y') {
@@ -64,6 +67,8 @@ function refreshFromLDAP() {
       $err=createLDAPGroup($gid,$dg);      
       if ($err=="") {
 	$err=$dg->addFile($this->initid);
+	$tnew_docgroupid[]=$dg->initid;
+	if ((!in_array($dg->initid,$t_docgroupid)) && ($err == "")) $this->AddComment(sprintf(_("Add to group %s"),$dg->title));
       }
     }
   }
@@ -80,6 +85,8 @@ function refreshFromLDAP() {
       $err=createLDAPGroup($gid,$dg);    
       if ($err=="") {
 	$err=$dg->addFile($this->initid);
+	$tnew_docgroupid[]=$dg->initid;
+	if ((!in_array($dg->initid,$t_docgroupid)) && ($err == "")) $this->AddComment(sprintf(_("Add to group %s"),$dg->title));
       }
     }
   }
@@ -91,6 +98,8 @@ function refreshFromLDAP() {
       $err=createLDAPGroup($gid,$dg);    
       if ($err=="") {
 	$err=$dg->addFile($this->initid);
+	$tnew_docgroupid[]=$dg->initid;
+	if ((!in_array($dg->initid,$t_docgroupid)) && ($err == "")) $this->AddComment(sprintf(_("Add to group %s"),$dg->title));
       }      
     }
   } else {
@@ -105,12 +114,25 @@ function refreshFromLDAP() {
 	$docu=getDocFromUniqId($gid);
 	if ($docu) {
 	  $err=$this->addFile($docu->initid);
+	  $tnew_docgroupid[]=$dg->initid;
+	  if ((!in_array($dg->initid,$t_docgroupid)) && ($err == "")) $this->AddComment(sprintf(_("Add to group %s"),$dg->title));
 	}
       }
     }
   }
+  
+  // suppress for other groups
+  $tdiff=array_diff($t_docgroupid,$tnew_docgroupid);
+  foreach ($tdiff as $docid) {
+    $doc=new_doc($this->dbaccess,$docid);
+    $uid=$doc->getValue("ldap_uniqid");
+    if ($uid) {
+      $err=$doc->delFile($this->initid);	
+      if ($err == "") $this->AddComment(sprintf(_("Delete from group %s"),$doc->title));
+      
+    }
+  }
 
-   
   return $err;
 }
 

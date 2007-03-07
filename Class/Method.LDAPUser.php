@@ -3,7 +3,7 @@
  * Active Directory User manipulation
  *
  * @author Anakeen 2007
- * @version $Id: Method.LDAPUser.php,v 1.7 2007/03/06 10:04:35 eric Exp $
+ * @version $Id: Method.LDAPUser.php,v 1.8 2007/03/07 15:02:41 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -12,8 +12,8 @@
 
 
 var $defaultview="FDL:VIEWBODYCARD"; // use default view
-var $defaultedit="NU:NU_EDIT"; // use default view
-
+var $defaultedit="FDL:EDITBODYCARD"; // use default view
+var $defaultcreate="NU:NU_EDIT"; // use default view
 
 
 function postModify() {
