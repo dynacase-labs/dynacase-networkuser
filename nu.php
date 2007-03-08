@@ -5,7 +5,7 @@
  * All HTTP requests call index.php to execute action within application
  *
  * @author Anakeen 2007
- * @version $Id: nu.php,v 1.7 2007/03/06 16:29:36 eric Exp $
+ * @version $Id: nu.php,v 1.8 2007/03/08 16:57:08 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package WHAT
  * @subpackage 
@@ -15,13 +15,11 @@
 
 
 
-// if want to create user automatically
-$creatuser=true;
-
+  // if want to create user automatically
+  // setenv ldap_createuser to yes in apache configuration
 
 $login=$_SERVER['PHP_AUTH_USER'];
-if ($login) {  
-  
+if ($login) {    
   if (!$sess_num) {
     // verify only  when session is out
     include_once('Class.User.php');
@@ -41,6 +39,7 @@ if ($login) {
       // Create User if not exists
       // Rename login if Exist
 
+      $creatuser=(strtolower(getenv("ldap_createuser"))=="yes");
       if ($creatuser) {
 	// need create him   
       
