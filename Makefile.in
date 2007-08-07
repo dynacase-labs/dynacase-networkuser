@@ -1,5 +1,5 @@
 # ============================================
-# $Id: Makefile.in,v 1.6 2007/02/28 14:59:33 eric Exp $
+# $Id: Makefile.in,v 1.7 2007/08/07 10:24:43 eric Exp $
 # ============================================
 PACKAGE = @PACKAGE@
 VERSION = @VERSION@
@@ -25,7 +25,7 @@ DISTFILES += $(SUBDIR) networkuser.ods \
 $(pubdir)/EXTERNALS :
 	mkdir -p $@
 
-$(pubdir)/EXTERNALS/nu.php: $(pubdir)/EXTERNALS 
+$(pubdir)/EXTERNALS/nu.php: $(pubdir)/EXTERNALS nu.php
 	cd $(pubdir)/EXTERNALS;ln -s ../$(appname)/$(appname)_external.php nu.php
 
 
