@@ -1,7 +1,7 @@
 #! /bin/rpm
 #
 #  File: 
-#  $Id: FREEDOM-NU.spec.in,v 1.6 2007/08/16 09:54:39 yannick Exp $
+#  $Id: FREEDOM-NU.spec.in,v 1.7 2007/08/16 10:22:56 eric Exp $
 #
 #  This is the SPEC file for the What Users Module
 #  Anakeen What Application
@@ -56,11 +56,18 @@ BuildArchitectures: noarch
 BuildRoot: /tmp/anakeen-root
 Prereq: gettext
 Requires: FREEDOM-LIB >= 2.7.4
-Requires: nss-ldap
+%if %{pld}
+Requires: pam-pam_ldap
+Requires: openldap
+%else
+Requires: nss_ldap
+%endif
+
 
 
 %description
 Active Directory functions to be use with a Microsoft Windows authentification
+or LDAP posix account to be use with a LDAP authentification
 
 
 %prep
