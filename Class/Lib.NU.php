@@ -3,7 +3,7 @@
  *  LDAP functions
  *
  * @author Anakeen 2007
- * @version $Id: Lib.NU.php,v 1.10 2007/03/06 16:29:36 eric Exp $
+ * @version $Id: Lib.NU.php,v 1.11 2007/10/08 13:03:56 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -292,4 +292,3 @@ function sid_decode($osid) {
   return $sid;
 }
 ?>
-
