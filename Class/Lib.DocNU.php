@@ -3,7 +3,7 @@
  *  LDAP Document methods
  *
  * @author Anakeen 2007
- * @version $Id: Lib.DocNU.php,v 1.10 2007/03/06 16:29:36 eric Exp $
+ * @version $Id: Lib.DocNU.php,v 1.11 2007/10/08 13:00:51 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -57,9 +57,11 @@ function createLDAPFamily($sid,&$doc,$family,$isgroup) {
     }
     if ($err=="") {
       $gfid=$g->fid;
-      $dbaccess=getParam("FREEDOM_DB");
-      $doc=new_doc($dbaccess,$gfid);
-      $doc->refreshFromLDAP();
+      if ($gfid) {
+	$dbaccess=getParam("FREEDOM_DB");
+	$doc=new_doc($dbaccess,$gfid);
+	if ($doc->isAlive()) $doc->refreshFromLDAP();
+      }
     }
   }
   if ($err) return sprintf(_("Cannot create LDAP %s [%s] : %s"),
