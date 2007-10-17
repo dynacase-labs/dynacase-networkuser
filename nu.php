@@ -5,7 +5,7 @@
  * All HTTP requests call index.php to execute action within application
  *
  * @author Anakeen 2007
- * @version $Id: nu.php,v 1.8 2007/03/08 16:57:08 eric Exp $
+ * @version $Id: nu.php,v 1.9 2007/10/17 12:22:16 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package WHAT
  * @subpackage 
@@ -26,6 +26,7 @@ if ($login) {
     include_once('Class.Session.php');
     $WHATUSER = new User();   
     if (seems_utf8($login)) $login=utf8_decode($login);
+    $login=trim($login);
     if ($WHATUSER->SetLoginName($login)) {
       // already exists
             
