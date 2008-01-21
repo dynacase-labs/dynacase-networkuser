@@ -7,7 +7,7 @@ Standards-Version: 3.7.2
 
 Package: freedom-nu
 Architecture: all
-Depends: freedom-lib
+Depends: freedom-lib, libpam-ldap
 Description:  The Freedom NetWorkUser
  Can use an external LDAP for authentication (openldap or AD for instance)
 
