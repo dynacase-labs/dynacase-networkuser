@@ -1,7 +1,7 @@
 #! /bin/rpm
 #
 #  File: 
-#  $Id: FREEDOM-NU.spec.in,v 1.8 2007/09/07 09:29:46 eric Exp $
+#  $Id: freedom-nu.spec.in,v 1.1 2008/03/28 10:09:35 eric Exp $
 #
 #  This is the SPEC file for the What Users Module
 #  Anakeen What Application
@@ -51,7 +51,7 @@
 %{?nhttpuser:%define httpuser %{nhttpuser}}
 %{?rpost:%define releasepostfix %{rpost}}
 
-%define dirname NU
+%define dirname @APPNAME@
 Summary: Active directory functions to authenticate with Windows
 Name: @PACKAGE@
 Version: @VERSION@
@@ -91,9 +91,7 @@ autoconf
 	     --with-httpuser=%{httpuser} \
 	     --prefix=%{destdir}
 make  pubdir=$RPM_BUILD_ROOT%{destdir} 
-install -d $RPM_BUILD_ROOT/%{destdir}/FDL
-cd $RPM_BUILD_ROOT/%{destdir}/FDL
-ln -s ../%{dirname}/Method.*.php  .
+
 
 %clean
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
@@ -112,6 +110,9 @@ ln -s ../%{dirname}/Method.*.php  .
 %files
 %defattr(-,%{httpuser},%{httpuser})
 %dir %{destdir}/%{dirname}
+%dir %{destdir}/FDL
+%dir %{destdir}/API
+%dir %{destdir}/EXTERNALS
 %{destdir}/%{dirname}/*
 %{destdir}/FDL/*
 %{destdir}/API/*php
