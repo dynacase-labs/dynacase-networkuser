@@ -5,7 +5,7 @@
  * All HTTP requests call index.php to execute action within application
  *
  * @author Anakeen 2007
- * @version $Id: nu.php,v 1.9 2007/10/17 12:22:16 eric Exp $
+ * @version $Id: nu.php,v 1.10 2008/05/21 14:12:53 eric Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package WHAT
  * @subpackage 
@@ -105,6 +105,6 @@ exit;
 */
 // ---------------------------- END TEST PART
 
-include('WHAT/index.php');
+include('./index.php');
 
 ?>
