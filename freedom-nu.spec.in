@@ -1,7 +1,7 @@
 #! /bin/rpm
 #
 #  File: 
-#  $Id: freedom-nu.spec.in,v 1.2 2008/03/28 10:39:51 eric Exp $
+#  $Id: freedom-nu.spec.in,v 1.3 2008/08/01 06:55:03 eric Exp $
 #
 #  This is the SPEC file for the What Users Module
 #  Anakeen What Application
@@ -67,7 +67,7 @@ BuildRoot: /tmp/anakeen-root
 Obsoletes:	FREEDOM-NU
 Provides:	FREEDOM-NU = @VERSION@
 Prereq: gettext
-Requires: FREEDOM-LIB >= 2.7.4
+Requires: freedom-usercard >= 2.11.6
 %if %{pld}
 Requires: pam-pam_ldap
 Requires: openldap
