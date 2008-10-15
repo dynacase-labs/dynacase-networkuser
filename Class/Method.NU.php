@@ -3,7 +3,7 @@
  * Active Directory Group manipulation
  *
  * @author Anakeen 2007
- * @version $Id: Method.NU.php,v 1.11 2007/03/07 15:02:41 eric Exp $
+ * @version $Id: Method.NU.php,v 1.12 2008/10/15 09:00:56 jerome Exp $
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package FREEDOM-AD
  */
@@ -214,4 +214,28 @@ function refreshFromLDAP() {
 function getADId($sid) {
   return substr(strrchr($sid, "-"), 1);
 }
+
+/**
+ * verify if the login syntax is correct and if the login not already exist
+ * @param string $login login to test
+ * @return array 2 items $err & $sug for view result of the constraint
+ */
+function ConstraintLogin($login,$iddomain) {
+  $sug=array("-");
+  
+  if( $login != "-" ) {
+    if( preg_match('/^\s*$/', $login) ) {
+      $err = _("the login must not be empty");
+    }
+    if( $err == "" ) {
+      return $this->ExistsLogin($login, $iddomain);
+    }
+  }
+  
+  return array(
+	       "err" => $err,
+	       "sug" => $sug
+	       );
+}
+    
 ?>
