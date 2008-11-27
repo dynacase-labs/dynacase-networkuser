@@ -20,6 +20,7 @@ set -e
 
 case "$1" in
     configure)
+	a2enmod authn_pam
 	chown -R www-data /usr/share/what/FDL/*
 	chown -R www-data /usr/share/what/NU
 	/usr/share/what/wstop
