@@ -1,5 +1,5 @@
 # ============================================
-# $Id: Makefile.in,v 1.9 2008/03/28 10:09:35 eric Exp $
+# $Id: Makefile.in,v 1.10 2009/01/19 14:21:36 jerome Exp $
 # ============================================
 PACKAGE = @PACKAGE@
 VERSION = @VERSION@
@@ -17,6 +17,8 @@ TOP_MODULES = nu.php
 export targetdir PACKAGE
 
 SUBDIR= Class Zone Api Images debian
+
+pages_not_xml = info.xml
 
 include $(utildir)/PubRule
 
