@@ -7,9 +7,9 @@ function searchLDAPinfo($login) {
     $conf=getLDAPconf(getParam("NU_LDAP_KIND"));
     $tout=array();
     foreach ($tinfo as $k=>$v) {
-      $login=utf8_decode($v[$conf["LDAP_USERLOGIN"]]);
-      $fn=utf8_decode($v["givenName"]);
-      $ln=utf8_decode($v["sn"]);
+      $login=$v[$conf["LDAP_USERLOGIN"]];
+      $fn=$v["givenName"];
+      $ln=$v["sn"];
 
       $tout[]=array($login,$login,$fn,$ln);
     }
