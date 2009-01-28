@@ -37,6 +37,9 @@ if (! $conf) {
  }
 
 $dryrun = getHttpVars('dryrun','N');
+$verbose = getHttpVars('verbose', 'N');
+
+$verbose = ($verbose=='Y')?true:false;
 
 /**
  * return LDAP AD information from the $login
@@ -126,30 +129,42 @@ foreach ($groups as $sid=>$group) {
     $groupdn[$group['dn']]++;
 
     if( $dryrun == 'Y' ) {
-      print "Will create group ".$group['dn']."\n";
+      if( $verbose ) {
+	print "Will create group ".$group['dn']."\n";
+      }
       continue;
     }
 
     $err=createLDAPGroup($sid,$doc);
     if ($err!="") print SKIPCOLOR;
-    print "Create Group ".$doc->title;
-    if ($err!="") print "[$err]".STOPCOLOR;
-    print "\n";
+    if( $verbose ) {
+      print "Create Group ".$doc->title;
+    }
+    if ($err!="") print "[$err]\n".STOPCOLOR;
+    if( $verbose ) {
+      print "\n";
+    }
   } else  {
 
     $groupdn[$group['dn']]++;
 
     if( $dryrun == 'Y' ) {
-      print "Will refresh group ".$group['dn']."\n";
+      if( $verbose ) {
+	print "Will refresh group ".$group['dn']."\n";
+      }
       continue;
     }
 
     $err=$doc->refreshFromLDAP();
     if ($err=="") $doc->postModify();
     if ($err!="") print SKIPCOLOR;
-    print "Refresh Group ".$doc->id.$doc->title;
-    if ($err!="") print "[$err]".STOPCOLOR;
-    print "\n";
+    if( $verbose ) {
+      print "Refresh Group ".$doc->id.$doc->title;
+    }
+    if ($err!="") print "[$err]\n".STOPCOLOR;
+    if( $verbose ) {
+      print "\n";
+    }
   }
 }
 
@@ -163,14 +178,18 @@ foreach ($groupdn as $group => $v) {
     $memberOf = "(!(memberOf=*))";
   }
 
-  print "Searching users ".$memberOf."\n";
+  if( $verbose ) {
+    print "Searching users ".$memberOf."\n";
+  }
 
   $err=searchinLDAP("(&(objectclass=".$conf["LDAP_USERCLASS"].")(!(objectclass=computer))".$memberOf.")",$conf["LDAP_USERUID"],$users);
   //print_r(($users));
   foreach ($users as $sid=>$user) {
 
     if( array_key_exists($user['dn'], $userdn) ) {
-      print "Skipping already processed user ".$user['dn']."\n";
+      if( $verbose ) {
+	print "Skipping already processed user ".$user['dn']."\n";
+      }
       continue;
     }
     $userdn[$user['dn']]++;
@@ -180,28 +199,40 @@ foreach ($groupdn as $group => $v) {
     if (! $doc) {
       
       if( $dryrun == 'Y' ) {
-	print "Will create user ".$user['dn']."\n";
+	if( $verbose ) {
+	  print "Will create user ".$user['dn']."\n";
+	}
 	continue;
       }
       
       $err=createLDAPUser($sid,$doc);   
       if ($err!="") print SKIPCOLOR; 
-      print "Create User ".$doc->title;
-      if ($err!="") print "[$err]".STOPCOLOR;
-      print "\n";
+      if( $verbose ) {
+	print "Create User ".$doc->title;
+      }
+      if ($err!="") print "[$err]\n".STOPCOLOR;
+      if( $verbose ) {
+	print "\n";
+      }
     } else  {
       
       if( $dryrun == 'Y' ) {
-	print "Will refresh user ".$user['dn']."\n";
+	if( $verbose ) {
+	  print "Will refresh user ".$user['dn']."\n";
+	}
 	continue;
       }
       
       $err=$doc->refreshFromLDAP();
       if ($err=="") $doc->postModify();
-      if ($err!="") print SKIPCOLOR; 
-      print "Refresh ".$doc->title;
-      if ($err!="") print "[$err]".STOPCOLOR;
-      print "\n";
+      if ($err!="") print SKIPCOLOR;
+      if( $verbose ) {
+	print "Refresh ".$doc->title;
+      }
+      if ($err!="") print "[$err]\n".STOPCOLOR;
+      if( $verbose ) {
+	print "\n";
+      }
     }
   } 
 }
