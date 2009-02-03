@@ -29,7 +29,7 @@ function refreshFromLDAP() {
       $val=$info[strtolower($v["ldapname"])];
       $att=$v["ldapmap"];
       if ($val)  {
-	if (seems_utf8($val)) $val=utf8_decode($val);
+	if (! seems_utf8($val)) $val=utf8_encode($val);
 	$this->setValue($att,$val);
       }
       //if ($val) print "--- $att:$val\n";      

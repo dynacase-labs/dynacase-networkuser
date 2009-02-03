@@ -40,10 +40,10 @@ function createLDAPFamily($sid,&$doc,$family,$isgroup) {
     $alogin=strtolower(getLDAPconf(getParam("NU_LDAP_KIND"),
 				   ($isgroup)?"LDAP_GROUPLOGIN":"LDAP_USERLOGIN"));
   
-    if (seems_utf8($infogrp[$alogin])) $infogrp[$alogin]=utf8_decode($infogrp[$alogin]);
+    if (! seems_utf8($infogrp[$alogin])) $infogrp[$alogin]=utf8_encode($infogrp[$alogin]);
     $g->SetLoginName($infogrp[$alogin]);
     if (! $g->isAffected()) {
-      foreach ($infogrp as $k=>$v)  if (seems_utf8($v)) $infogrp[$k]=utf8_decode($v);
+      foreach ($infogrp as $k=>$v)  if (! seems_utf8($v)) $infogrp[$k]=utf8_encode($v);
 
       $g->firstname=($infogrp["givenname"]=="")?$infogrp["cn"]:$infogrp["givenname"];
       $g->lastname=$infogrp["sn"];

@@ -25,7 +25,7 @@ if ($login) {
     include_once('Class.User.php');
     include_once('Class.Session.php');
     $WHATUSER = new User();   
-    if (seems_utf8($login)) $login=utf8_decode($login);
+    if (! seems_utf8($login)) $login=utf8_encode($login);
     $login=trim($login);
     if ($WHATUSER->SetLoginName($login)) {
       // already exists
