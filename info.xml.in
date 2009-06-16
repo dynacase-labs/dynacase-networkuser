@@ -1,8 +1,25 @@
 <?xml version="1.0"?>
 <module name="freedom-networkuser" disabled="no" version="@VERSION@" release="@RELEASE@">
-  <description>Active directory or POSIX LDAP functions to authenticate users.</description>
+
+  <description lang="en">Active directory or POSIX LDAP functions to authenticate users.</description>
+
   <requires>
-    <module name="freedom-core" />
-    <module name="freedom-vault" />
+    <module name="freedom" />
   </requires>
+
+  <post-install>
+    <process command="programs/app_post NU I" />
+    <process command="programs/record_application NU" />
+    <process command="programs/app_post NU U" />
+    <process command="programs/update_catalog" />
+  </post-install>
+ 
+  <post-upgrade>
+    <process command="programs/pre_migration NU" />
+    <process command="programs/app_post NU U" />
+    <process command="programs/record_application NU" />
+    <process command="programs/post_migration NU" />
+    <process command="programs/update_catalog" />
+  </post-upgrade>
+
 </module>
