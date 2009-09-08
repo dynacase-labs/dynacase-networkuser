@@ -26,6 +26,11 @@ function refreshFromLDAP() {
   //   print_r2($ldapmap);
   foreach ($ldapmap as $k=>$v) {    
     if ($v["ldapname"] && $v["ldapmap"] && ($v["ldapmap"][0]!=':') && ($info[strtolower($v["ldapname"])])) {
+      if( is_array($info['objectclass']) && ! in_array($v['ldapclass'], $info['objectclass']) ) {
+	continue;
+      } else if( is_string($info['objectclass']) && $v['ldapclass'] != $info['objectclass'] ) {
+	continue;
+      }
       $val=$info[strtolower($v["ldapname"])];
       $att=$v["ldapmap"];
       if ($val)  {
