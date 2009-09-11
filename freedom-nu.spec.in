@@ -112,10 +112,12 @@ make  pubdir=$RPM_BUILD_ROOT%{destdir}
 %files
 %defattr(-,%{httpuser},%{httpuser})
 %dir %{destdir}/%{dirname}
+%dir %{destdir}/WHAT
 %dir %{destdir}/FDL
 %dir %{destdir}/API
 %dir %{destdir}/EXTERNALS
 %{destdir}/%{dirname}/*
+%{destdir}/WHAT/*
 %{destdir}/FDL/*
 %{destdir}/API/*php
 %{destdir}/EXTERNALS/*php
