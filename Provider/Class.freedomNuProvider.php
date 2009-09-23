@@ -24,8 +24,6 @@ Class freedomNuProvider extends Provider {
     $root = getParam("NU_LDAP_BINDDN", 'admin');
     $rootpw = getParam("NU_LDAP_PASSWORD", 'admin');
 
-    error_log(__CLASS__."->".__FUNCTION__."($username, $password)");
-
     // retrieve user DN
     $dnu = "";
     $u = new User();
