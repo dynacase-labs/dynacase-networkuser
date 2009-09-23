@@ -53,6 +53,13 @@ Class freedomNuProvider extends Provider {
 	  ldap_set_option($r, $k, $v);
 	}
       }
+
+      if( array_key_exists('fix_euro', $this->parms) && strtolower($this->parms{'fix_euro'}) == 'yes' ) {
+	$password = preg_replace("/\xac/", "\x80", $password);
+      }
+      if( array_key_exists('convert_to_utf8', $this->parms) && strtolower($this->parms{'convert_to_utf8'}) == 'yes' ) {
+	$password = iconv('WINDOWS-1252', 'UTF-8', $password);
+      }
       
       $b = @ldap_bind($r, $dnu, $password);
       if ($b) return TRUE;
