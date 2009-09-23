@@ -45,6 +45,8 @@ Class freedomNuProvider extends Provider {
 	return FALSE;
       }
 
+      ldap_set_option($r, LDAP_OPT_PROTOCOL_VERSION, 3);
+
       $opts = $this->parms{'options'};
       if (is_array($opts)) {
 	foreach ($opts as $k=>$v) {
