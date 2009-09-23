@@ -46,7 +46,7 @@ Class freedomNuProvider extends Provider {
       }
 
       $opts = $this->parms{'options'};
-      if (is_array($opt)) {
+      if (is_array($opts)) {
 	foreach ($opts as $k=>$v) {
 	  ldap_set_option($r, $k, $v);
 	}
