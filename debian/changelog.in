@@ -1,4 +1,4 @@
-freedom-nu (@VERSION@-@RELEASE@) stable; urgency=low
+freedom-networkuser (@VERSION@-@RELEASE@) stable; urgency=low
 
   * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
 

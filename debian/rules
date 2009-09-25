@@ -61,9 +61,9 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/freedom-what.
-	make -i pubdir=$(CURDIR)/debian/freedom-nu/usr/share/what rootprefix=$(CURDIR)/debian/freedom-nu publish
-	install -d $(CURDIR)/debian/freedom-nu/usr/share/what/FDL
-	# (cd $(CURDIR)/debian/freedom-nu/usr/share/what/FDL; ln -s ../NU/Method*.php .)
+	make -i pubdir=$(CURDIR)/debian/freedom-networkuser/usr/share/what rootprefix=$(CURDIR)/debian/freedom-networkuser publish
+	install -d $(CURDIR)/debian/freedom-networkuser/usr/share/what/FDL
+	# (cd $(CURDIR)/debian/freedom-networkuser/usr/share/what/FDL; ln -s ../NU/Method*.php .)
 
 # Build architecture-independent files here.
 binary-indep: build install

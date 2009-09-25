@@ -1,11 +1,11 @@
-Source: freedom-nu
+Source: freedom-networkuser
 Section: web
 Priority: extra
 Maintainer: yannick <yannick.lebriquer@anakeen.com>
 Build-Depends: debhelper (>= 5), autoconf
 Standards-Version: 3.7.2
 
-Package: freedom-nu
+Package: freedom-networkuser
 Architecture: all
 Depends: freedom-lib, libpam-ldap
 Description:  The Freedom NetWorkUser

@@ -65,7 +65,9 @@ Packager: Yannick Le Briquer <yannick.lebriquer@anakeen.com>
 BuildArchitectures: noarch
 BuildRoot: /tmp/anakeen-root
 Obsoletes:	FREEDOM-NU
+Obsoletes:   freedom-nu	
 Provides:	FREEDOM-NU = @VERSION@
+Provides:	freedom-nu = @VERSION@
 Prereq: gettext
 Requires: freedom-usercard >= 2.11.6
 %if %{pld}
