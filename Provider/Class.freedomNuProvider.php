@@ -73,50 +73,71 @@ Class freedomNuProvider extends Provider {
 
     if ($dnu!="") {
       $uri = sprintf("%s://%s:%s/", ($ssl? 'ldaps' : 'ldap'), $host, $port);
-      $r = ldap_connect($uri);
-      $err = ldap_get_option($r, LDAP_OPT_PROTOCOL_VERSION, $ret);
-      if (!$err) {
-	error_log("[$ret] Can't establish LDAP connection : $uri");
-	return FALSE;
+
+      $conn = $this->openLdap($uri);
+      if( $conn === false ) {
+	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Error connecting to '%s'", $uri));
+	return false;
       }
 
-      ldap_set_option($r, LDAP_OPT_PROTOCOL_VERSION, 3);
-
-      $opts = $this->parms{'options'};
-      if (is_array($opts)) {
-	foreach ($opts as $k=>$v) {
-	  ldap_set_option($r, $k, $v);
-	}
+      $bind = $this->bindLdap($conn, $dnu, $password, true);
+      if( $bind === false ) {
+	$err = ldap_error($conn);
+	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("LDAP bind failed for user '%s' (err=[%s])", $username, $err));
+	ldap_close($conn);
+	return false;
       }
 
-      if( array_key_exists('fix_euro', $this->parms) && strtolower($this->parms{'fix_euro'}) == 'yes' ) {
-	$password = preg_replace("/\xac/", "\x80", $password);
-      }
-      if( array_key_exists('convert_to_utf8', $this->parms) && strtolower($this->parms{'convert_to_utf8'}) == 'yes' ) {
-	$password = iconv('WINDOWS-1252', 'UTF-8', $password);
-      }
-      
-      $b = @ldap_bind($r, $dnu, $password);
-      if ($b) {
-	return TRUE;
-      }
-      $err = ldap_error($r);
-      error_log("user=[$dnu] pass=[*********] result=>".($b?"OK":"NOK")." ($err)");
-      return FALSE;
+      ldap_close($conn);
+      return true;
     }
 
     error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Could not find a valid user with login '%s'!", $username));
-    return FALSE;
+    return false;
   }
   
-  
+
+  public function openLdap($uri) {
+    $conn = ldap_connect($uri);
+    if( $conn === false ) {
+      error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Error connecting to '%s'", $ldapUri));
+      return false;
+    }
+
+    ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
+
+    $opts = $this->parms{'options'};
+    if( is_array($opts) ) {
+      foreach ($opts as $k => $v) {
+	ldap_set_option($conn, $k, $v);
+      }
+    }
+
+    return $conn;
+  }
+
+  public function bindLdap($conn, $bindDn, $bindPassword, $fix_password = false) {
+    if( $fix_password && array_key_exists('fix_euro', $this->parms) && strtolower($this->parms{'fix_euro'}) == 'yes' ) {
+      $bindPassword = preg_replace("/\xac/", "\x80", $bindPassword);
+    }
+    if( $fix_password && array_key_exists('convert_to_utf8', $this->parms) && strtolower($this->parms{'convert_to_utf8'}) == 'yes' ) {
+      $bindPassword = iconv('WINDOWS-1252', 'UTF-8', $bindPassword);
+    }
+
+    $bind = @ldap_bind($conn, $bindDn, $bindPassword);
+    if( $bind === false ) {
+      error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Error binding with DN '%s' and password '%s'", $bindDn, $bindPassword));
+      return false;
+    }
+
+    return true;
+  }
+
   public function validateAuthorization($opt) {
     return TRUE; 
   }
 
-
-  public function initializeUser($username) {
-    
+  public function initializeUser($username) {    
     @include_once('WHAT/Class.User.php');
     @include_once('FDL/Class.Doc.php');
     
