@@ -34,8 +34,45 @@ Class freedomNuProvider extends Provider {
       }
     }
    
+    if( $dnu == "" ) {
+      // Check if automatic creation is allowed for this provider
+      if( ! $this->canICreateUser() ) {
+	// Auto-creation not allowed
+	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("authentication failed for user with login '%s' because auto-creation is disabled!", $username));
+	return FALSE;
+      }
+
+      // Search user in LDAP and create Freedom LDAPUSER document
+      $r = searchLDAPFromLogin($username, false, $info);
+      if (count($info)==1 && $info[0]['sAMAccountName']==$username) {
+	$err = $this->initializeUser($username);
+	if( $err != "" ) {
+	  error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Error creating user '%s' err=[%s]", $username, $err));
+	  return FALSE;
+	}
+	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Initialized user '%s' from LDAP!", $username));
+      } else {
+	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Could not find user '%s' in LDAP!", $username));
+	return FALSE;
+      }
+      
+      $dnu = "";
+      $u = new User();
+      if( $u->SetLoginName($username) ) {
+	$du = new_Doc($dbaccess, $u->fid);
+	if( $du->isAlive() ) {
+	  $dnu = $du->getValue("ldap_dn");
+	}
+      }
+      
+      if( $dnu == "" ) { 
+	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Could not find ldap_dn for user '%s'!", $username));
+	return FALSE;
+      }
+    }
+
     if ($dnu!="") {
-     $uri = sprintf("%s://%s:%s/", ($ssl? 'ldaps' : 'ldap'), $host, $port);
+      $uri = sprintf("%s://%s:%s/", ($ssl? 'ldaps' : 'ldap'), $host, $port);
       $r = ldap_connect($uri);
       $err = ldap_get_option($r, LDAP_OPT_PROTOCOL_VERSION, $ret);
       if (!$err) {
@@ -60,29 +97,15 @@ Class freedomNuProvider extends Provider {
       }
       
       $b = @ldap_bind($r, $dnu, $password);
-      if ($b) return TRUE;
-      else {
-	$err = ldap_error($r);
-	error_log("user=[$dnu] pass=[*********] result=>".($b?"OK":"NOK")." ($err)");
+      if ($b) {
+	return TRUE;
       }
-      return FALSE;    
-
-    } else {
-
-      // Check if automatic creation is allowed for this provider
-      if ($this->canICreateUser()) {
-
-	// first check given username and password 
- 	$r = searchLDAPFromLogin($username, false, $info);
-	if (count($info)==1 && $info[0]['sAMAccountName']==$username) {
-	  $err = $this->initializeUser($username);
-	  error_log(__CLASS__."::".__FUNCTION__." user $username found in ldap, createion=[$err]");
-	}
-
-	
-      }
-      
+      $err = ldap_error($r);
+      error_log("user=[$dnu] pass=[*********] result=>".($b?"OK":"NOK")." ($err)");
+      return FALSE;
     }
+
+    error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Could not find a valid user with login '%s'!", $username));
     return FALSE;
   }
   
@@ -115,23 +138,46 @@ Class freedomNuProvider extends Provider {
     $wu->password_new=uniqid("nu");
     $wu->iddomain="0";
     $wu->famid="LDAPUSER";
+
     $err=$wu->Add();
-    if ($err != "") return sprintf(_("cannot create user %s: %s"),$username,$err);
+    if ($err != "") {
+      $core->session->close();
+      return sprintf(_("cannot create user %s: %s"),$username,$err);
+    }
     
     include_once("FDL/Class.DocFam.php");
     $dbaccess=getParam("FREEDOM_DB");
+
     $du= new_doc($dbaccess,$wu->fid);
     if (!$du->isAlive()) {
       $err=$wu->delete();
+      $core->session->close();
       return sprintf(_("cannot create user %s: %s"),$login,$err." (freedom)");
     }
+
     $du->setValue("us_whatid",$wu->id);
     $err = $du->modify();
-    if ($err=="") {
-      $err=$du->refreshFromLDAP();
+    if( $err != "" ) {
+      error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Error modifying user '%s' err=[%s]", $username, $err));
+      $core->session->close();
+      return $err;
     }
-    $core->session->close();
-    
+
+    $err = $du->refreshFromLDAP();
+    if( $err != "" ) {
+      error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Error refreshing user '%s' from LDAP err=[%s]", $username, $err));
+      $core->session->close();
+      return $err;
+    }
+
+    $err = $du->refresh();
+    if( $err != "" ) {
+      error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Error refreshing user '%s' err=[%s]", $username, $err));
+      $core->session->close();
+      return $err;
+    }
+
+    $core->session->close();    
     return $err;
   }
   
