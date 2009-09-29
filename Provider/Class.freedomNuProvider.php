@@ -8,14 +8,14 @@
   */
 
 include_once("WHAT/Class.Provider.php");
+
 Class freedomNuProvider extends Provider {
   
-  public function validateCredential($username, $password) {  
+  public function validateCredential($username, $password) {
     global $action;
     @include_once('WHAT/Class.User.php');
     @include_once('FDL/Class.Doc.php');
     @include_once('NU/Lib.NU.php');
-
 
     $db = getParam("FREEDOM_DB");
     $ssl = false;
@@ -24,7 +24,9 @@ Class freedomNuProvider extends Provider {
     $root = getParam("NU_LDAP_BINDDN", 'admin');
     $rootpw = getParam("NU_LDAP_PASSWORD", 'admin');
 
-    // retrieve user DN
+    $uri = sprintf("%s://%s:%s/", ($ssl? 'ldaps' : 'ldap'), $host, $port);
+
+    // Check if the user already exists in Freedom and has a valid LDAP_DN
     $dnu = "";
     $u = new User();
     if( $u->SetLoginName($username) ) {   
@@ -33,28 +35,41 @@ Class freedomNuProvider extends Provider {
 	$dnu = $du->getValue("ldap_dn");
       }
     }
-   
+    
     if( $dnu == "" ) {
+      // Search user DN in LDAP
+      $r = searchLDAPFromLogin($username, false, $info);
+      if( count($info) <= 0 ) {
+	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("search for user '%s' returned empty result!", $username));
+	return false;
+      }
+      if( count($info) > 1 ) {
+	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("search for user '%s' returned more than one result!", $username));
+	return false;
+      }
+      $dnu = $info[0]['distinguishedName'];
+      error_log(__CLASS__."::".__FUNCTION__." ".sprintf("found DN '%s' for user with login '%s'", $dnu, $username));
+      
+      // Check credential
+      $ret = $this->checkBindLdap($uri, $dnu, $password);
+      if( $ret === false ) {
+	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("pre-creation authentication failed for user with DN '%s'!", $dnu));
+	return false;
+      }
+      
       // Check if automatic creation is allowed for this provider
       if( ! $this->canICreateUser() ) {
-	// Auto-creation not allowed
 	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("authentication failed for user with login '%s' because auto-creation is disabled!", $username));
 	return FALSE;
       }
-
-      // Search user in LDAP and create Freedom LDAPUSER document
-      $r = searchLDAPFromLogin($username, false, $info);
-      if (count($info)==1 && $info[0]['sAMAccountName']==$username) {
-	$err = $this->initializeUser($username);
-	if( $err != "" ) {
-	  error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Error creating user '%s' err=[%s]", $username, $err));
-	  return FALSE;
-	}
-	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Initialized user '%s' from LDAP!", $username));
-      } else {
-	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Could not find user '%s' in LDAP!", $username));
+      
+      // Create Freedom account
+      $err = $this->initializeUser($username);
+      if( $err != "" ) {
+	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Error creating user '%s' err=[%s]", $username, $err));
 	return FALSE;
       }
+      error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Initialized user '%s' from LDAP!", $username));
       
       $dnu = "";
       $u = new User();
@@ -70,33 +85,19 @@ Class freedomNuProvider extends Provider {
 	return FALSE;
       }
     }
-
-    if ($dnu!="") {
-      $uri = sprintf("%s://%s:%s/", ($ssl? 'ldaps' : 'ldap'), $host, $port);
-
-      $conn = $this->openLdap($uri);
-      if( $conn === false ) {
-	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Error connecting to '%s'", $uri));
-	return false;
-      }
-
-      $bind = $this->bindLdap($conn, $dnu, $password, true);
-      if( $bind === false ) {
-	$err = ldap_error($conn);
-	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("LDAP bind failed for user '%s' (err=[%s])", $username, $err));
-	ldap_close($conn);
-	return false;
-      }
-
-      ldap_close($conn);
-      return true;
+    
+    $ret = $this->checkBindLdap($uri, $dnu, $password);
+    if( $ret === false ) {
+      error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Authentication failed for user '%s'!", $username));
+      return false;
     }
-
-    error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Could not find a valid user with login '%s'!", $username));
-    return false;
+    
+    return true;
   }
   
-
+  /**
+   * Connect to LDAP uri
+   */
   public function openLdap($uri) {
     $conn = ldap_connect($uri);
     if( $conn === false ) {
@@ -116,20 +117,45 @@ Class freedomNuProvider extends Provider {
     return $conn;
   }
 
-  public function bindLdap($conn, $bindDn, $bindPassword, $fix_password = false) {
-    if( $fix_password && array_key_exists('fix_euro', $this->parms) && strtolower($this->parms{'fix_euro'}) == 'yes' ) {
+  /**
+   * Perform a LDAP bind
+   */
+  public function bindLdap($conn, $bindDn, $bindPassword) {
+    if( $bindDn == '' ) {
+      error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Empty bindDN supplied"));
+      return false;
+    }
+
+    if( array_key_exists('fix_euro', $this->parms) && strtolower($this->parms{'fix_euro'}) == 'yes' ) {
       $bindPassword = preg_replace("/\xac/", "\x80", $bindPassword);
     }
-    if( $fix_password && array_key_exists('convert_to_utf8', $this->parms) && strtolower($this->parms{'convert_to_utf8'}) == 'yes' ) {
+    if( array_key_exists('convert_to_utf8', $this->parms) && strtolower($this->parms{'convert_to_utf8'}) == 'yes' ) {
       $bindPassword = iconv('WINDOWS-1252', 'UTF-8', $bindPassword);
     }
 
     $bind = @ldap_bind($conn, $bindDn, $bindPassword);
     if( $bind === false ) {
-      error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Error binding with DN '%s' and password '%s'", $bindDn, $bindPassword));
+      error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Error binding with DN '%s'", $bindDn));
       return false;
     }
 
+    return true;
+  }
+
+  /**
+   * Connect to a LDAP uri and perform a LDAP bind
+   */
+  public function checkBindLdap($uri, $bindDn, $bindPassword) {
+    $conn = $this->openLdap($uri);
+    if( $conn == false ) {
+      return false;
+    }
+    $bind = $this->bindLdap($conn, $bindDn, $bindPassword);
+    if( $bind == false ) {
+      ldap_close($conn);
+      return false;
+    }
+    ldap_close($conn);
     return true;
   }
 
@@ -203,4 +229,5 @@ Class freedomNuProvider extends Provider {
   }
   
 }
+
 ?>
