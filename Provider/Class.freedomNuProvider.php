@@ -13,8 +13,6 @@ Class freedomNuProvider extends Provider {
   
   public function validateCredential($username, $password) {
     global $action;
-    @include_once('WHAT/Class.User.php');
-    @include_once('FDL/Class.Doc.php');
     @include_once('NU/Lib.NU.php');
 
     $db = getParam("FREEDOM_DB");
@@ -26,66 +24,18 @@ Class freedomNuProvider extends Provider {
 
     $uri = sprintf("%s://%s:%s/", ($ssl? 'ldaps' : 'ldap'), $host, $port);
 
-    // Check if the user already exists in Freedom and has a valid LDAP_DN
-    $dnu = "";
-    $u = new User();
-    if( $u->SetLoginName($username) ) {   
-      $du = new_Doc($dbaccess, $u->fid);
-      if ($du->isAlive()) {
-	$dnu = $du->getValue("ldap_dn");
-      }
+    // Search user DN in LDAP
+    $r = searchLDAPFromLogin($username, false, $info);
+    if( count($info) <= 0 ) {
+      error_log(__CLASS__."::".__FUNCTION__." ".sprintf("search for user '%s' returned empty result!", $username));
+      return false;
     }
-    
-    if( $dnu == "" ) {
-      // Search user DN in LDAP
-      $r = searchLDAPFromLogin($username, false, $info);
-      if( count($info) <= 0 ) {
-	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("search for user '%s' returned empty result!", $username));
-	return false;
-      }
-      if( count($info) > 1 ) {
-	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("search for user '%s' returned more than one result!", $username));
-	return false;
-      }
-      $dnu = $info[0]['distinguishedName'];
-      error_log(__CLASS__."::".__FUNCTION__." ".sprintf("found DN '%s' for user with login '%s'", $dnu, $username));
-      
-      // Check credential
-      $ret = $this->checkBindLdap($uri, $dnu, $password);
-      if( $ret === false ) {
-	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("pre-creation authentication failed for user with DN '%s'!", $dnu));
-	return false;
-      }
-      
-      // Check if automatic creation is allowed for this provider
-      if( ! $this->canICreateUser() ) {
-	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("authentication failed for user with login '%s' because auto-creation is disabled!", $username));
-	return FALSE;
-      }
-      
-      // Create Freedom account
-      $err = $this->initializeUser($username);
-      if( $err != "" ) {
-	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Error creating user '%s' err=[%s]", $username, $err));
-	return FALSE;
-      }
-      error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Initialized user '%s' from LDAP!", $username));
-      
-      $dnu = "";
-      $u = new User();
-      if( $u->SetLoginName($username) ) {
-	$du = new_Doc($dbaccess, $u->fid);
-	if( $du->isAlive() ) {
-	  $dnu = $du->getValue("ldap_dn");
-	}
-      }
-      
-      if( $dnu == "" ) { 
-	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Could not find ldap_dn for user '%s'!", $username));
-	return FALSE;
-      }
+    if( count($info) > 1 ) {
+      error_log(__CLASS__."::".__FUNCTION__." ".sprintf("search for user '%s' returned more than one result!", $username));
+      return false;
     }
-    
+    $dnu = $info[0]['distinguishedName'];
+      
     $ret = $this->checkBindLdap($uri, $dnu, $password);
     if( $ret === false ) {
       error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Authentication failed for user '%s'!", $username));
