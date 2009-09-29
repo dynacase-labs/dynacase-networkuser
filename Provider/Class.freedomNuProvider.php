@@ -163,9 +163,10 @@ Class freedomNuProvider extends Provider {
     return TRUE; 
   }
 
-  public function initializeUser($username) {    
+  public function initializeUser($username) {
     @include_once('WHAT/Class.User.php');
     @include_once('FDL/Class.Doc.php');
+    @include_once('WHAT/Class.Session.php');
     
     global $action;
     $err = "";
