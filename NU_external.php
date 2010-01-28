@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * @author Anakeen
+ * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
+ */
+
 include_once("NU/Lib.NU.php");
   //function searchLDAPinfo(LDAP_GETINFO):US_LOGIN,US_FNAME,US,LNAME
 function searchLDAPinfo($login) {

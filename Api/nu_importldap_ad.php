@@ -4,7 +4,7 @@
  *
  * @author Anakeen 2007
  * @version $Id: nu_importldap_ad.php,v 1.1 2008/12/18 10:50:32 jerome Exp $
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
  * @package FREEDOM-AD
  * @subpackage 
  */

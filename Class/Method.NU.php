@@ -4,7 +4,7 @@
  *
  * @author Anakeen 2007
  * @version $Id: Method.NU.php,v 1.12 2008/10/15 09:00:56 jerome Exp $
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
  * @package FREEDOM-AD
  */
  /**

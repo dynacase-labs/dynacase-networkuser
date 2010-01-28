@@ -4,7 +4,7 @@
  *
  * @author Anakeen 2007
  * @version $Id: Lib.ConfLDAP.php,v 1.2 2007/12/20 08:54:21 eric Exp $
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
  * @package FREEDOM-AD
  */
  /**
