@@ -17,6 +17,7 @@
 function UseLdap() { return false; }
 
 function refreshFromLDAP() {
+  include_once("FDL/Lib.Usercard.php");
   include_once("NU/Lib.NU.php");
   include_once("NU/Lib.DocNU.php");
 
@@ -49,6 +50,7 @@ function refreshFromLDAP() {
   $tnew_docgroupid=array();
 
   $user=$this->getWUser();
+  $userMailHasChanged = false;
   if ($user) {
     if ($user->isgroup=='Y') {
       $user->firstname="";
@@ -58,6 +60,9 @@ function refreshFromLDAP() {
       $user->firstname=$this->getValue("us_fname");
       $user->lastname=$this->getValue("us_lname");
       $user->mail=$this->getValue("us_mail");
+      if( $this->getOldValue('us_mail') != '' ) {
+	$userMailHasChanged = true;
+      }
     }
     $user->modify(true);
   }
@@ -136,6 +141,22 @@ function refreshFromLDAP() {
       if ($err == "") $this->AddComment(sprintf(_("Delete from group %s"),$doc->title));
       
     }
+  }
+
+  // if user mail addr has changed, then refresh parent groups
+  // to recompute their mail addr
+  if( $userMailHasChanged ) {
+    $coreGroupIdList = array();
+
+    $freedomGroupIdList = $this->getTValue('us_idgroup');
+    foreach( $freedomGroupIdList as $id ) {
+      $doc = new_Doc($this->dbaccess, $id);
+      if( ! is_object($doc) || ! $doc->isAlive() ) {
+	continue;
+      }
+      array_push($coreGroupIdList, $doc->getValue('us_whatid'));
+    }
+    refreshGroups($coreGroupIdList);
   }
 
   return $err;
