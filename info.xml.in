@@ -22,4 +22,10 @@
     <process command="programs/update_catalog" />
   </post-upgrade>
 
+  <changelog>
+    <version number="0.4.0-4" date="2010-03-01">
+      <change title="Refresh groups mail address when a networkuser mail addr has changed" url="http://dev.freedom-ecm.org/issues/629" />
+    </version>
+  </changelog>
+
 </module>
