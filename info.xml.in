@@ -23,6 +23,9 @@
   </post-upgrade>
 
   <changelog>
+    <version number="0.4.0-6" date="2010-03-25">
+      <change title="Fixed a warning when LDAP attribute is multi-valued" url="http://dev.freedom-ecm.org/issues/652" />
+    </version>
     <version number="0.4.0-5" date="2010-03-03">
       <change title="Added infopath link" />
     </version>
