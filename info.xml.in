@@ -4,7 +4,6 @@
   <description lang="en">Active directory or POSIX LDAP functions to authenticate users.</description>
 
   <requires>
-    <module name="freedom" />
   </requires>
 
   <post-install>
