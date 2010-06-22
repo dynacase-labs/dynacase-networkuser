@@ -19,26 +19,53 @@ include_once("NU/Lib.ConfLDAP.php");
  * @return string error message - empty means no error
  */
 function getAdInfoFromSid($sid,&$info,$isgroup) {
-
-  $ldapuniqid=strtolower(getLDAPconf(getParam("NU_LDAP_KIND"),
-				     ($isgroup)?"LDAP_GROUPUID":"LDAP_USERUID"));
+  $conf = getLDAPconf(getParam("NU_LDAP_KIND"), ($isgroup)?"LDAP_GROUPUID":"LDAP_USERUID");
+  if( $conf === false ) {
+    $err = sprintf("Could not get LDAP conf with kind '%s'", getParam("NU_LDAP_KIND"));
+    return $err;
+  }
+  $ldapuniqid=strtolower($conf);
   if ($ldapuniqid == "objectsid") {
     $hex='\\'.substr(strtoupper(chunk_split(bin2hex(sid_encode($sid)),2,'\\')),0,-1);
     $sid=$hex;
   }
-  $err=getLDAPFromUid($sid,$isgroup,$info);
+  if( $isgroup ) {
+    $err=getLDAPFromUid($sid,$isgroup,$info);
+  } else {
+    $err = getLDAPUserFromUid($sid, $isgroup, $info);
+  }
   return $err;  
 }
+
 /**
  * return LDAP AD information from the $login
  * @param string $login connection identificator
  * @param array &$info ldap information
  * @return string error message - empty means no error
  */
-function getLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$info) {
+function getLDAPGroupFrom($login, $ldapclass, $ldapbindloginattribute, &$info) {
+  $ldap_group_base_dn = getParam("NU_LDAP_GROUP_BASE_DN", "");
+  $ldap_group_filter = getParam("NU_LDAP_GROUP_FILTER", "");
+  if( $ldap_group_base_dn == "" ) {
+    $err = sprintf("Empty NU_LDAP_GROUP_BASE_DN");
+    return $err;
+  }
+  return getLDAPFrom($ldap_group_base_dn, $ldap_group_filter, $login, $ldapclass, $ldapbindloginattribute, $info);
+}
+
+function getLDAPUserFrom($login, $ldapclass, $ldapbindloginattribute, &$info) {
+  $ldap_user_base_dn = getParam("NU_LDAP_USER_BASE_DN", "");
+  $ldap_user_filter = getParam("NU_LDAP_USER_FILTER", "");
+  if( $ldap_user_base_dn == "" ) {
+    $err = sprintf("Empty NU_LDAP_USER_BASE_DN");
+    return $err;
+  }
+  return getLDAPFrom($ldap_user_base_dn, $ldap_user_filter, $login, $ldapclass, $ldapbindloginattribute, $info);
+}
+
+function getLDAPFrom($ldapbase, $addfilter, $login, $ldapclass, $ldapbindloginattribute, &$info) {
   include_once("NU/Lib.NU.php");
   $ldaphost=getParam("NU_LDAP_HOST");
-  $ldapbase=getParam("NU_LDAP_BASE");
   $ldappw=getParam("NU_LDAP_PASSWORD");
   $ldapbinddn=getParam("NU_LDAP_BINDDN");
 
@@ -55,9 +82,14 @@ function getLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$info) {
     // Search login entry
     if (!seems_utf8($login)) $login=utf8_encode($login);
 
-    $filter=sprintf("(&(objectClass=%s)(%s=%s))",
-		    $ldapclass,$ldapbindloginattribute,$login);
-    $sr=ldap_search($ds, $ldapbase, $filter); 
+    $filter=sprintf("(&(objectClass=%s)(%s=%s)%s)",
+		    $ldapclass,$ldapbindloginattribute,$login,$addfilter);
+    $sr=@ldap_search($ds, $ldapbase, $filter); 
+    if( $sr === false ) {
+      $err = sprintf("ldap_search returned with error: %s", ldap_error($ds));
+      @ldap_close($ds);
+      return $err;
+    }
     $count= ldap_count_entries($ds, $sr);
 
     //print "ldap_search($ds, $ldapbase, $filter\n"; print "found:$count\n";
@@ -99,16 +131,36 @@ function getLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$info) {
   return $err;
   
 }
+
 /**
  * serach LDAP AD information which match the $login
  * @param string $login connection identificator
  * @param array &$info ldap information
  * @return string error message - empty means no error
  */
-function searchLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$tinfo) {
+function searchLDAPGroupFrom($login, $ldapclass, $ldapbindloginattribute, &$info) {
+  $ldap_group_base_dn = getParam("NU_LDAP_GROUP_BASE_DN", "");
+  $ldap_group_filter = getParam("NU_LDAP_GROUP_FILTER", "");
+  if( $ldap_group_base_dn == "" ) {
+    $err = sprintf("Empty NU_LDAP_GROUP_BASE_DN");
+    return $err;
+  }
+  return searchLDAPFrom($ldap_group_base_dn, $ldap_group_filter, $login, $ldapclass, $ldapbindloginattribute, $info);
+}
+
+function searchLDAPUserFrom($login, $ldapclass, $ldapbindloginattribute, &$info) {
+  $ldap_user_base_dn = getParam("NU_LDAP_USER_BASE_DN", "");
+  $ldap_user_filter = getParam("NU_LDAP_USER_FILTER", "");
+  if( $ldap_user_base_dn == "" ) {
+    $err = sprintf("Empty NU_LDAP_USER_BASE_DN");
+    return $err;
+  }
+  return searchLDAPFrom($ldap_user_base_dn, $ldap_user_filter, $login, $ldapclass, $ldapbindloginattribute, $info);
+}
+
+function searchLDAPFrom($ldapbase, $addfilter, $login, $ldapclass, $ldapbindloginattribute, &$tinfo) {
   include_once("NU/Lib.NU.php");
   $ldaphost=getParam("NU_LDAP_HOST");
-  $ldapbase=getParam("NU_LDAP_BASE");
   $ldappw=getParam("NU_LDAP_PASSWORD");
   $ldapbinddn=getParam("NU_LDAP_BINDDN");
 
@@ -124,14 +176,23 @@ function searchLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$tinfo) {
     if (!$r) return ldap_error($ds);
     // Search login entry
     if ($login) {
-      $filter=sprintf("(&(objectClass=%s)(|(cn=*%s*)(%s=*%s*)))",
-		      $ldapclass,$login,$ldapbindloginattribute,$login);
+      $filter=sprintf("(&(objectClass=%s)(|(cn=*%s*)(%s=*%s*))%s)",
+		      $ldapclass,$login,$ldapbindloginattribute,$login,$addfilter);
     } else {
-      $filter=sprintf("(objectClass=%s)", $ldapclass);      
+      $filter=sprintf("(&(objectClass=%s)%s)", $ldapclass, $addfilter);      
     }
-    $sr=ldap_search($ds, $ldapbase, $filter); 
-     
-    $entry= ldap_first_entry($ds, $sr);
+    $sr=@ldap_search($ds, $ldapbase, $filter);
+    if( $sr === false ) {
+      $err = sprintf("ldap_search returned with error: %s", ldap_error($ds));
+      @ldap_close($ds);
+      return $err;
+    }
+    $entry= @ldap_first_entry($ds, $sr);
+    if( $entry === false ) {
+      $err = sprintf("ldap_first_entry returned with error: %s", ldap_error($ds));
+      ldap_close($ds);
+      return $err;
+    }
 
     while( $entry ) {
       //      print "<pre>";print_r($info);print "</pre>";
@@ -179,15 +240,18 @@ function searchLDAPFrom($login,$ldapclass,$ldapbindloginattribute,&$tinfo) {
  */
 function getLDAPFromLogin($login,$isgroup,&$info) {
   $conf=getLDAPconf(getParam("NU_LDAP_KIND"));
+  if( $conf === false ) {
+    $err = sprintf("Could not get LDAP conf with kind '%s'", getParam("NU_LDAP_KIND"));
+    return $err;
+  }
   if ($isgroup) {
     $ldapattr=$conf["LDAP_GROUPLOGIN"];
     $ldapclass=$conf["LDAP_GROUPCLASS"];
-  } else {
-    $ldapattr=$conf["LDAP_USERLOGIN"];
-    $ldapclass=$conf["LDAP_USERCLASS"];
+    return getLDAPGroupFrom($login,$ldapclass,$ldapattr,$info);
   }
-  return getLDAPFrom($login,$ldapclass,$ldapattr,$info);
-  
+  $ldapattr=$conf["LDAP_USERLOGIN"];
+  $ldapclass=$conf["LDAP_USERCLASS"];
+  return getLDAPUserFrom($login,$ldapclass,$ldapattr,$info);
 }
 
 
@@ -201,15 +265,18 @@ function getLDAPFromLogin($login,$isgroup,&$info) {
  */
 function getLDAPFromUid($uid,$isgroup,&$info) {
   $conf=getLDAPconf(getParam("NU_LDAP_KIND"));
+  if( $conf === false ) {
+    $err = sprintf("Could not get LDAP conf with kind '%s'", getParam("NU_LDAP_KIND"));
+    return $err;
+  }
   if ($isgroup) {
     $ldapattr=$conf["LDAP_GROUPUID"];
     $ldapclass=$conf["LDAP_GROUPCLASS"];
-  } else {
-    $ldapattr=$conf["LDAP_USERUID"];
-    $ldapclass=$conf["LDAP_USERCLASS"];
+    return getLDAPGroupFrom($uid,$ldapclass,$ldapattr,$info);
   }
-  return getLDAPFrom($uid,$ldapclass,$ldapattr,$info);
-  
+  $ldapattr=$conf["LDAP_USERUID"];
+  $ldapclass=$conf["LDAP_USERCLASS"];
+  return getLDAPUserFrom($uid,$ldapclass,$ldapattr,$info);
 }
 
 /**
@@ -221,15 +288,18 @@ function getLDAPFromUid($uid,$isgroup,&$info) {
  */
 function searchLDAPFromLogin($login,$isgroup,&$info) {
   $conf=getLDAPconf(getParam("NU_LDAP_KIND"));
+  if( $conf === false ) {
+    $err = sprintf("Could not get LDAP conf with kind '%s'", getParam("NU_LDAP_KIND"));
+    return $err;
+  }
   if ($isgroup) {
     $ldapattr=$conf["LDAP_GROUPLOGIN"];
     $ldapclass=$conf["LDAP_GROUPCLASS"];
-  } else {
-    $ldapattr=$conf["LDAP_USERLOGIN"];
-    $ldapclass=$conf["LDAP_USERCLASS"];
+    return searchLDAPGroupFrom($login,$ldapclass,$ldapattr,$info);
   }
-  return searchLDAPFrom($login,$ldapclass,$ldapattr,$info);
-  
+  $ldapattr=$conf["LDAP_USERLOGIN"];
+  $ldapclass=$conf["LDAP_USERCLASS"];
+  return searchLDAPUserFrom($login,$ldapclass,$ldapattr,$info);  
 }
 
 

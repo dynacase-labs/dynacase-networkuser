@@ -26,7 +26,11 @@ Class freedomNuProvider extends Provider {
     $port = '389';
     $root = getParam("NU_LDAP_BINDDN", 'admin');
     $rootpw = getParam("NU_LDAP_PASSWORD", 'admin');
-    $base = getParam("NU_LDAP_BASE", '');
+    $base = getParam("NU_LDAP_USER_BASE_DN", '');
+    if( $base == '' ) {
+      error_log(__CLASS__."::".__FUNCTION__." ".sprintf("empty NU_LDAP_USER_BASE_DN!"));
+      return false;
+    }
 
     $uri = sprintf("%s://%s:%s/", ($ssl? 'ldaps' : 'ldap'), $host, $port);
 
@@ -128,6 +132,7 @@ Class freedomNuProvider extends Provider {
     $conf = getLDAPconf(getParam("NU_LDAP_KIND"));
     $ldapattr = $conf["LDAP_USERLOGIN"];
     $ldapclass = $conf["LDAP_USERCLASS"];
+    $addfilter = getParam("NU_LDAP_USER_FILTER");
 
     $conn = $this->openLdap($uri);
     if( $conn === false ) {
@@ -139,10 +144,11 @@ Class freedomNuProvider extends Provider {
       return false;
     }
 
-    $filter = sprintf("(&(objectClass=%s)(%s=%s))",
+    $filter = sprintf("(&(objectClass=%s)(%s=%s)%s)",
 		      $this->ldap_escape($ldapclass),
 		      $this->ldap_escape($ldapattr),
-		      $this->ldap_escape($login)
+		      $this->ldap_escape($login),
+		      $addfilter
 		      );
 
     $search = @ldap_search($conn, $base, $filter);

@@ -47,9 +47,26 @@ $verbose = ($verbose=='Y')?true:false;
  * @param array &$info ldap information
  * @return string error message - empty means no error
  */
-function searchinLDAP($filter,$ldapuniqid,&$info) {
+function searchinLDAPUser(&$conf, &$info) {
+  $ldapbase = getParam("NU_LDAP_USER_BASE_DN");
+  $addfilter = getParam("NU_LDAP_USER_FILTER");
+  $filter = sprintf("(&(objectclass=%s)(!(objectclass=computer))%s)", $conf['LDAP_USERCLASS'], $addfilter);
+  $ldapuniqid = $conf['LDAP_USERUID'];
+
+  return searchinLDAP($ldapbase, $filter, $ldapuniqid, $info);
+}
+
+function searchinLDAPGroup(&$conf, &$info) {
+  $ldapbase = getParam("NU_LDAP_GROUP_BASE_DN");
+  $addfilter = getParam("NU_LDAP_GROUP_FILTER");
+  $filter = sprintf("(&(objectclass=%s)(!(objectclass=computer))%s)", $conf['LDAP_GROUPCLASS'], $addfilter);
+  $ldapuniqid =  $conf['LDAP_GROUPUID'];
+
+  return searchinLDAP($ldapbase, $filter, $ldapuniqid, $info);
+}
+
+function searchinLDAP($ldapbase, $filter,$ldapuniqid,&$info) {
   $ldaphost=getParam("NU_LDAP_HOST");
-  $ldapbase=getParam("NU_LDAP_BASE");
   $ldappw=getParam("NU_LDAP_PASSWORD");
   $ldapbinddn=getParam("NU_LDAP_BINDDN");
   $ldapuniqid=strtolower($ldapuniqid);
@@ -112,7 +129,8 @@ function searchinLDAP($filter,$ldapuniqid,&$info) {
 }
 
 //$err=searchinLDAP("objectclass=group",$groups);
-$err=searchinLDAP("(&(objectclass=".$conf["LDAP_GROUPCLASS"].")(!(objectclass=computer)))",$conf["LDAP_GROUPUID"],$groups);
+// $err=searchinLDAP("(&(objectclass=".$conf["LDAP_GROUPCLASS"].")(!(objectclass=computer)))",$conf["LDAP_GROUPUID"],$groups);
+$err = searchinLDAPGroup($conf, $groups);
 if ($err) print "ERROR:$err\n";
 //print_r(array_keys($groups));
 //print_r(($groups));
@@ -182,7 +200,8 @@ foreach ($groupdn as $group => $v) {
     print "Searching users ".$memberOf."\n";
   }
 
-  $err=searchinLDAP("(&(objectclass=".$conf["LDAP_USERCLASS"].")(!(objectclass=computer))".$memberOf.")",$conf["LDAP_USERUID"],$users);
+  // $err=searchinLDAP("(&(objectclass=".$conf["LDAP_USERCLASS"].")(!(objectclass=computer))".$memberOf.")",$conf["LDAP_USERUID"],$users);
+  $err = searchinLDAPUser($conf, $users);
   //print_r(($users));
   foreach ($users as $sid=>$user) {
 

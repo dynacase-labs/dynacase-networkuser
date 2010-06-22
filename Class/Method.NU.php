@@ -177,7 +177,7 @@ function refreshFromLDAP() {
  function getADDN($dn,&$info) {
    include_once("NU/Lib.NU.php");
   $ldaphost=getParam("NU_LDAP_HOST");
-  $ldapbase=getParam("NU_LDAP_BASE");
+  $ldapbase = getParam("NU_LDAP_GROUP_BASE_DN");
   $ldappw=getParam("NU_LDAP_PASSWORD");
   $ldapbinddn=getParam("NU_LDAP_BINDDN");
 

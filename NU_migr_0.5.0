@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -e
+
+export PGSERVICE=$pgservice_core
+
+# -- Insert new paramv
+cat <<EOF | psql
+BEGIN;
+INSERT INTO paramv (name, type, appid, val)
+       SELECT 'NU_LDAP_GROUP_BASE_DN', 'G', app.id, '' FROM application AS app WHERE app.name = 'NU';
+INSERT INTO paramv (name, type, appid, val)
+       SELECT 'NU_LDAP_USER_BASE_DN', 'G', app.id, '' FROM application AS app WHERE app.name = 'NU';
+COMMIT;
+EOF
+
+# -- copy value from old paramv to new paramv
+cat <<EOF | psql
+BEGIN;
+UPDATE paramv
+       SET val = (SELECT val FROM paramv WHERE name = 'NU_LDAP_BASE')
+       WHERE name = 'NU_LDAP_GROUP_BASE_DN' OR name = 'NU_LDAP_USER_BASE_DN';
+DELETE FROM paramv
+       WHERE name = 'NU_LDAP_BASE';
+COMMIT;
+EOF
