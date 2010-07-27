@@ -23,16 +23,15 @@ Class freedomNuProvider extends Provider {
     $db = getParam("FREEDOM_DB");
     $ssl = false;
     $host = getParam("NU_LDAP_HOST", '127.0.0.1');
-    $port = '389';
-    $root = getParam("NU_LDAP_BINDDN", 'admin');
-    $rootpw = getParam("NU_LDAP_PASSWORD", 'admin');
+    $root = getParam("NU_LDAP_BINDDN", '');
+    $rootpw = getParam("NU_LDAP_PASSWORD", '');
     $base = getParam("NU_LDAP_USER_BASE_DN", '');
     if( $base == '' ) {
       error_log(__CLASS__."::".__FUNCTION__." ".sprintf("empty NU_LDAP_USER_BASE_DN!"));
       return false;
     }
 
-    $uri = sprintf("%s://%s:%s/", ($ssl? 'ldaps' : 'ldap'), $host, $port);
+    $uri = sprintf("%s://%s/", ($ssl? 'ldaps' : 'ldap'), $host);
 
     // Search user DN in LDAP
     $info = array();
@@ -82,11 +81,6 @@ Class freedomNuProvider extends Provider {
    * Perform a LDAP bind
    */
   public function bindLdap($conn, $bindDn, $bindPassword) {
-    if( $bindDn == '' ) {
-      error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Empty bindDN supplied"));
-      return false;
-    }
-
     if( array_key_exists('fix_euro', $this->parms) && strtolower($this->parms{'fix_euro'}) == 'yes' ) {
       $bindPassword = preg_replace("/\xac/", "\x80", $bindPassword);
     }
