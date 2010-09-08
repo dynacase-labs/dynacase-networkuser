@@ -62,7 +62,7 @@ function createLDAPFamily($sid,&$doc,$family,$isgroup) {
       if ($gfid) {
 	$dbaccess=getParam("FREEDOM_DB");
 	$doc=new_doc($dbaccess,$gfid);
-	if ($doc->isAlive()) $doc->refreshFromLDAP();
+	if( $doc->isAlive() && method_exists($doc, 'refreshFromLDAP') ) $doc->refreshFromLDAP();
       }
     }
   }
