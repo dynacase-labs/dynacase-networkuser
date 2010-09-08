@@ -29,11 +29,7 @@ function getAdInfoFromSid($sid,&$info,$isgroup) {
     $hex='\\'.substr(strtoupper(chunk_split(bin2hex(sid_encode($sid)),2,'\\')),0,-1);
     $sid=$hex;
   }
-  if( $isgroup ) {
-    $err=getLDAPFromUid($sid,$isgroup,$info);
-  } else {
-    $err = getLDAPUserFromUid($sid, $isgroup, $info);
-  }
+  $err=getLDAPFromUid($sid,$isgroup,$info);
   return $err;  
 }
 
