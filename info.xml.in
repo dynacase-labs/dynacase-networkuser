@@ -22,6 +22,9 @@
   </post-upgrade>
 
   <changelog>
+    <version number="0.5.2" date="2010-09-15">
+      <change title="Fix conflict with admin user" url="http://dev.freedom-ecm.org/versions/show/43"/>        
+    </version>
     <version number="0.5.0-1" date="2010-06-23">
       <change title="Added parameters for setting a distinct group base DN and user base DN, and using LDAP filters" url="http://dev.freedom-ecm.org/issues/827" />
     </version>
