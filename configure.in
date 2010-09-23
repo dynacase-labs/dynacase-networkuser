@@ -18,7 +18,7 @@ VERSION=`cat VERSION`
 AC_SUBST(RELEASE)
 RELEASE=`cat RELEASE`
 AC_SUBST(PACKAGE)
-PACKAGE=freedom-networkuser
+PACKAGE=dynacase-networkuser
 AC_SUBST(APPNAME)
 APPNAME=NU
 
@@ -69,4 +69,4 @@ AC_ARG_WITH(dbport,
 [  --with-dbport=port number  the database port (default 5432)], DBPORT=$withval)
 
 
-AC_OUTPUT(Makefile NU_init.php freedom-networkuser.spec debian/changelog info.xml)
+AC_OUTPUT(Makefile NU_init.php info.xml)
