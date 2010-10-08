@@ -16,7 +16,7 @@ GZIP_ENV = --best
 TOP_MODULES = nu.php
 export targetdir PACKAGE
 
-SUBDIR= Class Zone Api Images debian Provider
+SUBDIR= Class Zone Api Images Provider
 
 pages_not_xml = info.xml
 
