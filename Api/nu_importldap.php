@@ -125,14 +125,14 @@ function searchinLDAP($ldapbase, $filter,$ldapuniqid,&$info) {
 
 //$err=searchinLDAP("objectclass=group",$groups);
 // $err=searchinLDAP("objectclass=".$conf["LDAP_GROUPCLASS"],$conf["LDAP_GROUPUID"],$groups);
-$err = searchinLDAPUser($conf, $groups);
+$groups = array();
+$err = searchinLDAPGroup($conf, $groups);
 if ($err) print "ERROR:$err\n";
 //print_r(array_keys($groups));
 //print_r(($groups));
-
 foreach ($groups as $sid=>$group) {
   print "Search group $sid...";
-  $doc=getDocFromUniqId($sid);
+  $doc=getDocFromUniqId($sid, "LDAPGROUP");
 
   if (! $doc) {
     $err=createLDAPGroup($sid,$doc);
@@ -152,11 +152,13 @@ foreach ($groups as $sid=>$group) {
 
 //$err=searchinLDAP("objectclass=user",$users);
 // $err=searchinLDAP("objectclass=".$conf["LDAP_USERCLASS"],$conf["LDAP_USERUID"],$users);
-$err = searchinLDAPGroup($conf, $users);
+$users = array();
+$err = searchinLDAPUser($conf, $users);
+if ($err) print "ERROR:$err\n";
 //print_r(($users));
 foreach ($users as $sid=>$user) {
   print "Search user $sid...";
-  $doc=getDocFromUniqId($sid);
+  $doc=getDocFromUniqId($sid, "LDAPUSER");
   if (! $doc) {
     $err=createLDAPUser($sid,$doc);   
     if ($err!="") print SKIPCOLOR; 

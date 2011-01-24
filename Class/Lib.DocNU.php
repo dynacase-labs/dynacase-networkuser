@@ -19,15 +19,21 @@ include_once("NU/Lib.NU.php");
  * @param string $sid ascii sid
  * @return Doc document object or false if not found
  */
-function getDocFromUniqId($sid) {
+function getDocFromUniqId($sid, $famId="") {
 
   $dbaccess=getParam("FREEDOM_DB");
   $filter=array("ldap_uniqid='".pg_escape_string($sid)."'");
-  $ls = getChildDoc($dbaccess, 0 ,0,1, $filter, 1, "LIST","LDAPGROUP");
-  if (count($ls) > 0) return $ls[0];
-  $ls = getChildDoc($dbaccess, 0 ,0,1, $filter, 1, "LIST","LDAPUSER");
-  if (count($ls) > 0) return $ls[0];
-
+  if( $famId != '' ) {
+  	$ls = getChildDoc($dbaccess, 0, 0, 1, $filter, 1, "LIST", $famId);
+  	if( count($ls) > 0 ) {
+  		return $ls[0];
+  	}
+  } else {
+  	$ls = getChildDoc($dbaccess, 0 ,0,1, $filter, 1, "LIST","LDAPGROUP");
+  	if (count($ls) > 0) return $ls[0];
+  	$ls = getChildDoc($dbaccess, 0 ,0,1, $filter, 1, "LIST","LDAPUSER");
+  	if (count($ls) > 0) return $ls[0];
+  }
 
   return false;  
 }
