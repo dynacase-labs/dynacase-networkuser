@@ -177,17 +177,30 @@ function refreshFromLDAP() {
  function getADDN($dn,&$info) {
    include_once("NU/Lib.NU.php");
   $ldaphost=getParam("NU_LDAP_HOST");
+  $ldapport=getParam("NU_LDAP_PORT");
+  $ldapmode=getParam("NU_LDAP_MODE");
   $ldapbase = getParam("NU_LDAP_GROUP_BASE_DN");
   $ldappw=getParam("NU_LDAP_PASSWORD");
   $ldapbinddn=getParam("NU_LDAP_BINDDN");
 
   $info=array();
 
-  $ds=ldap_connect($ldaphost);  // must be a valid LDAP server!
+  $uri = getLDAPUri($ldapmode, $ldaphost, $ldapport);
+  $ds=ldap_connect($uri);  // must be a valid LDAP server!
 
   if ($ds) {
     ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
     ldap_set_option($ds, LDAP_OPT_REFERRALS, 0);
+
+    if( $ldapmode == 'tls' ) {
+    	$ret = ldap_start_tls($ds);
+    	if( $ret === false ) {
+    		$err=sprintf(_("Unable to connect to LDAP server %s"),$uri);
+    		@ldap_close($ds);
+    		return $err;
+    	}
+    }
+
     $r=ldap_bind($ds,$ldapbinddn,$ldappw);  
 
     // Search login entry
@@ -224,7 +237,7 @@ function refreshFromLDAP() {
     ldap_close($ds);
 
   } else {
-    $err=sprintf(_("Unable to connect to LDAP server %s"),$ldaphost);
+    $err=sprintf(_("Unable to connect to LDAP server %s"),$uri);
   }
 
   return $err;

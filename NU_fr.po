@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: NetworkUser\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-22 17:26+0200\n"
-"PO-Revision-Date: 2010-06-22 17:57+0200\n"
+"POT-Creation-Date: 2011-03-11 15:05+0100\n"
+"PO-Revision-Date: 2011-03-11 15:06+0100\n"
 "Last-Translator: Eric Brison <eric.brison@anakeen.com>\n"
 "Language-Team: French <distrib@anakeen.com>\n"
 "Language: fr\n"
@@ -70,6 +70,12 @@ msgstr "l'utilisateur %s existe pour FREEDOM"
 
 msgid "host of the LDAP"
 msgstr "adresse du serveur LDAP"
+
+msgid "port of the LDAP"
+msgstr "port du serveur LDAP"
+
+msgid "LDAP connection mode"
+msgstr "Mode de connexion au serveur LDAP"
 
 msgid "base DN for LDAP groups"
 msgstr "Racine de la base des groupes"

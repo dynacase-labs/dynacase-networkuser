@@ -18,24 +18,41 @@ include_once("WHAT/Class.Provider.php");
 Class freedomNuProvider extends Provider {
   
   public function validateCredential($username, $password) {
+  	include_once('NU/Lib.NU.php');
+
     global $action;
 
     $db = getParam("FREEDOM_DB");
-    $ssl = false;
-    $host = getParam("NU_LDAP_HOST", '127.0.0.1');
+    $host = getParam("NU_LDAP_HOST", '');
+    $port = getParam("NU_LDAP_PORT", '');
+    $mode = getParam("NU_LDAP_MODE", '');
     $root = getParam("NU_LDAP_BINDDN", '');
     $rootpw = getParam("NU_LDAP_PASSWORD", '');
     $base = getParam("NU_LDAP_USER_BASE_DN", '');
+
+    if( $host == '' ) {
+    	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("empty NU_LDAP_HOST!"));
+    	return false;
+    }
+    if( $mode != 'plain' && $mode != 'ssl' && $mode != 'tls' ) {
+    	error_log(__CLASS__."::".__FUNCTION__." ".sprintf("invalid NU_LDAP_MODE '%s'!", $mode));
+    	return false;
+    }
     if( $base == '' ) {
       error_log(__CLASS__."::".__FUNCTION__." ".sprintf("empty NU_LDAP_USER_BASE_DN!"));
       return false;
     }
 
-    $uri = sprintf("%s://%s/", ($ssl? 'ldaps' : 'ldap'), $host);
+    $uri = getLDAPUri($mode, $host, $port);
+
+    $opts = array();
+   	if( $mode == 'tls' ) {
+   		$opts['tls'] = TRUE;
+   	}
 
     // Search user DN in LDAP
     $info = array();
-    $r = $this->getLDAPEntryFromLogin($uri, $root, $rootpw, $base, $username, $info);
+    $r = $this->getLDAPEntryFromLogin($uri, $opts, $root, $rootpw, $base, $username, $info);
     if( count($info) <= 0 ) {
       error_log(__CLASS__."::".__FUNCTION__." ".sprintf("search for user '%s' returned empty result!", $username));
       return false;
@@ -46,7 +63,7 @@ Class freedomNuProvider extends Provider {
     }
     $dnu = $info[0]['dn'];
     
-    $ret = $this->checkBindLdap($uri, $dnu, $password);
+    $ret = $this->checkBindLdap($uri, $opts, $dnu, $password);
     if( $ret === false ) {
       error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Authentication failed for user '%s'!", $username));
       return false;
@@ -58,10 +75,10 @@ Class freedomNuProvider extends Provider {
   /**
    * Connect to LDAP uri
    */
-  public function openLdap($uri) {
+  public function openLdap($uri, &$uriOpts) {
     $conn = ldap_connect($uri);
     if( $conn === false ) {
-      error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Error connecting to '%s'", $ldapUri));
+      error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Error connecting to '%s'", $uri));
       return false;
     }
 
@@ -72,6 +89,15 @@ Class freedomNuProvider extends Provider {
       foreach ($opts as $k => $v) {
 	ldap_set_option($conn, $k, $v);
       }
+    }
+
+    if( isset($uriOpts['tls']) && $uriOpts['tls'] === true ) {
+    	$ret = ldap_start_tls($conn);
+    	if( $ret === false ) {
+    		error_log(__CLASS__."::".__FUNCTION__." ".sprintf("Failed TLS negotiation with '%s': %s", $uri, ldap_error($conn)));
+    		ldap_close($conn);
+    		return false;
+    	}
     }
 
     return $conn;
@@ -100,8 +126,8 @@ Class freedomNuProvider extends Provider {
   /**
    * Connect to a LDAP uri and perform a LDAP bind
    */
-  public function checkBindLdap($uri, $bindDn, $bindPassword) {
-    $conn = $this->openLdap($uri);
+  public function checkBindLdap($uri, &$uriOpts, $bindDn, $bindPassword) {
+    $conn = $this->openLdap($uri, $uriOpts);
     if( $conn == false ) {
       return false;
     }
@@ -117,7 +143,7 @@ Class freedomNuProvider extends Provider {
   /**
    * get LDAP entries matching the given login
    */
-  public function getLDAPEntryFromLogin($uri, $bindDn, $bindPassword, $base, $login, &$tinfo) {
+  public function getLDAPEntryFromLogin($uri, &$uriOpts, $bindDn, $bindPassword, $base, $login, &$tinfo) {
     @include_once('NU/Lib.NU.php');
     @include_once('NU/Lib.ConfLDAP.php');
 
@@ -128,7 +154,7 @@ Class freedomNuProvider extends Provider {
     $ldapclass = $conf["LDAP_USERCLASS"];
     $addfilter = getParam("NU_LDAP_USER_FILTER");
 
-    $conn = $this->openLdap($uri);
+    $conn = $this->openLdap($uri, $uriOpts);
     if( $conn === false ) {
       return false;
     }

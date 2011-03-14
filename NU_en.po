@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WORKSPACE\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-22 17:26+0200\n"
+"POT-Creation-Date: 2011-03-11 15:05+0100\n"
 "PO-Revision-Date: 2001-03-14 00:54-0500\n"
 "Last-Translator: Eric Brison <eric.brison@anakeen.com>\n"
 "Language-Team: english-anakeen <distrib@anakeen.com>\n"
@@ -70,6 +70,12 @@ msgid "user %s not exists for FREEDOM"
 msgstr ""
 
 msgid "host of the LDAP"
+msgstr ""
+
+msgid "port of the LDAP"
+msgstr ""
+
+msgid "LDAP connection mode"
 msgstr ""
 
 msgid "base DN for LDAP groups"
