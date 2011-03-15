@@ -21,6 +21,8 @@ function refreshFromLDAP() {
   include_once("NU/Lib.NU.php");
   include_once("NU/Lib.DocNU.php");
 
+  $ldap_group_base_dn = getParam("NU_LDAP_GROUP_BASE_DN", "");
+
   $err=getLDAPFromLogin($this->getValue('us_login'),($this->doctype=='D'),$info);
 
   $ldapmap=$this->getMapAttributes();
@@ -67,7 +69,11 @@ function refreshFromLDAP() {
     $user->modify(true);
   }
 
-  // insert in groups
+  /*
+   * insert in LDAP/AD groups if group base dn is defined
+   */
+  if( $ldap_group_base_dn != '') {
+
   $dnmembers=$info["memberof"];
   if ($dnmembers) {
     if (! is_array($dnmembers)) $dnmembers=array($dnmembers);
@@ -143,6 +149,8 @@ function refreshFromLDAP() {
     }
   }
 
+  }
+
   // if user mail addr has changed, then refresh parent groups
   // to recompute their mail addr
   if( $userMailHasChanged ) {
@@ -157,6 +165,25 @@ function refreshFromLDAP() {
       array_push($coreGroupIdList, $doc->getValue('us_whatid'));
     }
     refreshGroups($coreGroupIdList);
+  }
+
+  /*
+   * If the user (or group) is not attached to a group, then
+   * attach it to the LDAPUSER default US_DEFAULTGROUP group
+   */
+  $groupList = $user->getGroupsId();
+  if( count($groupList) <= 0 ) {
+  	$ldapUserFamId = getIdFromName($this->dbaccess, 'LDAPUSER');
+  	if( is_numeric($ldapUserFamId) ) {
+  		$ldapUserFam = new_Doc($this->dbaccess, $ldapUserFamId, true);
+  		if( is_object($ldapUserFam) ) {
+  			$defaultGroupId = $ldapUserFam->getParamValue('US_DEFAULTGROUP');
+  			$defaultGroup = new_Doc($this->dbaccess, $defaultGroupId, true);
+  			if( is_object($defaultGroup) && $defaultGroup->isAlive() ) {
+  				$err = $defaultGroup->addFile($this->initid);
+  			}
+  		}
+  	}
   }
 
   return $err;
@@ -201,7 +228,12 @@ function refreshFromLDAP() {
     	}
     }
 
-    $r=ldap_bind($ds,$ldapbinddn,$ldappw);  
+    $r=ldap_bind($ds,$ldapbinddn,$ldappw);
+    if( $r === false ) {
+    	$err = sprintf(_("Unable to bind to LDAP server %s"), $uri);
+    	@ldap_close($ds);
+    	return $err;
+    }
 
     // Search login entry
     $filter="objectclass=*";

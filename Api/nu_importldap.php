@@ -57,6 +57,11 @@ function searchinLDAPGroup(&$conf, &$info) {
   $filter = sprintf("(&(objectclass=%s)%s)", $conf['LDAP_GROUPCLASS'], $addfilter);
   $ldapuniqid =  $conf['LDAP_GROUPUID'];
 
+  // Skip creation of groups if the group base dn is empty
+  if( $ldapbase == '' ) {
+  	return '';
+  }
+
   return searchinLDAP($ldapbase, $filter, $ldapuniqid, $info);
 }
 
@@ -67,6 +72,11 @@ function searchinLDAP($ldapbase, $filter,$ldapuniqid,&$info) {
   $ldappw=getParam("NU_LDAP_PASSWORD");
   $ldapbinddn=getParam("NU_LDAP_BINDDN");
   $ldapuniqid=strtolower($ldapuniqid);
+
+  if( $ldapbase == '' ) {
+  	$err = sprintf("Empty base DN");
+  	return $err;
+  }
 
   $info=array();
 
@@ -89,7 +99,11 @@ function searchinLDAP($ldapbase, $filter,$ldapuniqid,&$info) {
     $r=ldap_bind($ds,$ldapbinddn,$ldappw);  
     if ($r) {
       // Search login entry
-      $sr=ldap_search($ds, "$ldapbase", $filter); 
+      $sr=ldap_search($ds, "$ldapbase", $filter);
+      if( $sr === false ) {
+      	$err = sprintf(_("Search in base DN '%s' returned with error: %s"), $ldapbase, ldap_error($ds));
+      	return $err;
+      }
 
       $count= ldap_count_entries($ds, $sr);
    

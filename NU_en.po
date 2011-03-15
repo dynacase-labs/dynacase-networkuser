@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WORKSPACE\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-11 15:05+0100\n"
+"POT-Creation-Date: 2011-03-14 17:07+0100\n"
 "PO-Revision-Date: 2001-03-14 00:54-0500\n"
 "Last-Translator: Eric Brison <eric.brison@anakeen.com>\n"
 "Language-Team: english-anakeen <distrib@anakeen.com>\n"
@@ -17,11 +17,15 @@ msgstr ""
 "\n"
 
 #, c-format
-msgid "Unable to bind to LDAP server %s"
+msgid "Unable to connect to LDAP server %s"
 msgstr ""
 
 #, c-format
-msgid "Unable to connect to LDAP server %s"
+msgid "Search in base DN '%s' returned with error: %s"
+msgstr ""
+
+#, c-format
+msgid "Unable to bind to LDAP server %s"
 msgstr ""
 
 #, c-format

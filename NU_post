@@ -11,6 +11,7 @@ if [ "$1" = "I" ] ; then
 
   $wpub/wsh.php --api=freedom_import --file=$wpub/NU/networkuser.ods
   $wpub/wsh.php --api=freedom_import --file=$wpub/NU/networkuser-ldapmap.ods
+  $wpub/wsh.php --api=freedom_import --file=$wpub/NU/networkuser-init.ods
 
 fi
 

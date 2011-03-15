@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: NetworkUser\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-11 15:05+0100\n"
-"PO-Revision-Date: 2011-03-11 15:06+0100\n"
+"POT-Creation-Date: 2011-03-14 17:07+0100\n"
+"PO-Revision-Date: 2011-03-14 17:09+0100\n"
 "Last-Translator: Eric Brison <eric.brison@anakeen.com>\n"
 "Language-Team: French <distrib@anakeen.com>\n"
 "Language: fr\n"
@@ -16,12 +16,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #, c-format
-msgid "Unable to bind to LDAP server %s"
-msgstr "Impossible de joindre le serveur LDAP %s"
-
-#, c-format
 msgid "Unable to connect to LDAP server %s"
 msgstr "Impossible de se connecter au serveur LDAP %s"
+
+#, c-format
+msgid "Search in base DN '%s' returned with error: %s"
+msgstr "La recherche dans la base '%s' a retourné une erreur : %s"
+
+#, c-format
+msgid "Unable to bind to LDAP server %s"
+msgstr "Impossible de joindre le serveur LDAP %s"
 
 #, c-format
 msgid "Cannot create LDAP %s [%s] : %s"

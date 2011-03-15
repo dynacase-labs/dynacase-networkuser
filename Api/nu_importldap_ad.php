@@ -62,6 +62,11 @@ function searchinLDAPGroup(&$conf, &$info) {
   $filter = sprintf("(&(objectclass=%s)(!(objectclass=computer))%s)", $conf['LDAP_GROUPCLASS'], $addfilter);
   $ldapuniqid =  $conf['LDAP_GROUPUID'];
 
+  // Skip creation of groups if the group base dn is empty
+  if( $ldapbase == '' ) {
+  	return '';
+  }
+
   return searchinLDAP($ldapbase, $filter, $ldapuniqid, $info);
 }
 
@@ -72,6 +77,11 @@ function searchinLDAP($ldapbase, $filter,$ldapuniqid,&$info) {
   $ldappw=getParam("NU_LDAP_PASSWORD");
   $ldapbinddn=getParam("NU_LDAP_BINDDN");
   $ldapuniqid=strtolower($ldapuniqid);
+
+  if( $ldapbase == '' ) {
+  	$err = sprintf("Empty base DN");
+  	return $err;
+  }
 
   $info=array();
 
@@ -94,7 +104,12 @@ function searchinLDAP($ldapbase, $filter,$ldapuniqid,&$info) {
     $r=ldap_bind($ds,$ldapbinddn,$ldappw);  
     if ($r) {
       // Search login entry
-      $sr=ldap_search($ds, "$ldapbase", $filter); 
+      $sr=ldap_search($ds, "$ldapbase", $filter);
+      if( $sr === false ) {
+      	$err = sprintf(_("Search in base DN '%s' returned with error: %s"), $ldapbase, ldap_error($ds));
+      	@ldap_close($ds);
+      	return $err;
+      }
 
       $count= ldap_count_entries($ds, $sr);
    
@@ -141,12 +156,9 @@ function searchinLDAP($ldapbase, $filter,$ldapuniqid,&$info) {
   
 }
 
-//$err=searchinLDAP("objectclass=group",$groups);
-// $err=searchinLDAP("(&(objectclass=".$conf["LDAP_GROUPCLASS"].")(!(objectclass=computer)))",$conf["LDAP_GROUPUID"],$groups);
+$groups = array();
 $err = searchinLDAPGroup($conf, $groups);
 if ($err) print "ERROR:$err\n";
-//print_r(array_keys($groups));
-//print_r(($groups));
 
 $groupdn = array();
 $groupdn['*']++;
@@ -213,9 +225,11 @@ foreach ($groupdn as $group => $v) {
     print "Searching users ".$memberOf."\n";
   }
 
-  // $err=searchinLDAP("(&(objectclass=".$conf["LDAP_USERCLASS"].")(!(objectclass=computer))".$memberOf.")",$conf["LDAP_USERUID"],$users);
+
+  $users = array();
   $err = searchinLDAPUser($conf, $users);
-  //print_r(($users));
+  if( $err != '' ) print "ERROR:$err\n";
+
   foreach ($users as $sid=>$user) {
 
     if( array_key_exists($user['dn'], $userdn) ) {
