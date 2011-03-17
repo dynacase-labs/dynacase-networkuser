@@ -50,6 +50,7 @@ $app_const= array(
 					 "user"=>"N"),
 		  "NU_LDAP_PASSWORD"    =>array("val"=>"",
 					   "global"=>"Y",
+					   "kind"=>"password",
 					   "descr"=>N_("password of the DN"),
 					   "user"=>"N"),
 		  "NU_LDAP_KIND"    =>array("val"=>"",
