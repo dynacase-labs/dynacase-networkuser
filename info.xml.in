@@ -8,6 +8,7 @@
   </replaces>
 
   <requires>
+    <module name="dynacase-platform" comp="ge" version="3.0.18" />
   </requires>
 
   <post-install>
