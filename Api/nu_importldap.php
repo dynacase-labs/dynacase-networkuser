@@ -1,23 +1,14 @@
 <?php
 /**
- * Import Users andgrops from a Active Directory
+ * Import Users and groups from a LDAP server
  *
  * @author Anakeen 2007
- * @version $Id: nu_importldap.php,v 1.11 2007/03/06 16:29:36 eric Exp $
  * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
- * @package FREEDOM-AD
- * @subpackage 
  */
- /**
- */
-
-// refreah for a classname
-// use this only if you have changed title attributes
 
 include_once("FDL/Lib.Attr.php");
 include_once("FDL/Class.DocFam.php");
 include_once("NU/Lib.DocNU.php");
-
 
 define("SKIPCOLOR",'[1;31;40m');
 define("UPDTCOLOR",'[1;32;40m');
@@ -26,15 +17,17 @@ define("STOPCOLOR",'[0m');
 $dbaccess=$appl->GetParam("FREEDOM_DB");
 if ($dbaccess == "") {
   print "Freedom Database not found : param FREEDOM_DB\n";
-  exit;
+  exit( 1 );
 }
 
 $conf=getLDAPconf(getParam("NU_LDAP_KIND"));
 if (! $conf) {
   print "Kind of LDAP database must be defined: parameter NU_LDAP_KIND.\n";
-  exit;
-  
- }
+  exit( 1 );
+}
+
+$onlygroups = getHttpVars('onlygroups', 'N');
+$onlygroups = ($onlygroups=='Y')?true:false;
 
 /**
  * return LDAP AD information from the $login
@@ -150,13 +143,10 @@ function searchinLDAP($ldapbase, $filter,$ldapuniqid,&$info) {
   
 }
 
-//$err=searchinLDAP("objectclass=group",$groups);
-// $err=searchinLDAP("objectclass=".$conf["LDAP_GROUPCLASS"],$conf["LDAP_GROUPUID"],$groups);
 $groups = array();
 $err = searchinLDAPGroup($conf, $groups);
 if ($err) print "ERROR:$err\n";
-//print_r(array_keys($groups));
-//print_r(($groups));
+
 foreach ($groups as $sid=>$group) {
   print "Search group $sid...";
   $doc=getDocFromUniqId($sid, "LDAPGROUP");
@@ -177,12 +167,14 @@ foreach ($groups as $sid=>$group) {
   }
 }
 
-//$err=searchinLDAP("objectclass=user",$users);
-// $err=searchinLDAP("objectclass=".$conf["LDAP_USERCLASS"],$conf["LDAP_USERUID"],$users);
+if( $onlygroups ) {
+	exit( 0 );
+}
+
 $users = array();
 $err = searchinLDAPUser($conf, $users);
 if ($err) print "ERROR:$err\n";
-//print_r(($users));
+
 foreach ($users as $sid=>$user) {
   print "Search user $sid...";
   $doc=getDocFromUniqId($sid, "LDAPUSER");
@@ -201,5 +193,7 @@ foreach ($users as $sid=>$user) {
     print "\n";
   }
 }
+
+exit( 0 );
 
 ?>

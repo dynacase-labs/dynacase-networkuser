@@ -1,23 +1,14 @@
 <?php
 /**
- * Import Users andgrops from a Active Directory
+ * Import Users and groups from a Active Directory server
  *
  * @author Anakeen 2007
- * @version $Id: nu_importldap_ad.php,v 1.1 2008/12/18 10:50:32 jerome Exp $
  * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
- * @package FREEDOM-AD
- * @subpackage 
  */
- /**
- */
-
-// refreah for a classname
-// use this only if you have changed title attributes
 
 include_once("FDL/Lib.Attr.php");
 include_once("FDL/Class.DocFam.php");
 include_once("NU/Lib.DocNU.php");
-
 
 define("SKIPCOLOR",'[1;31;40m');
 define("UPDTCOLOR",'[1;32;40m');
@@ -26,20 +17,21 @@ define("STOPCOLOR",'[0m');
 $dbaccess=$appl->GetParam("FREEDOM_DB");
 if ($dbaccess == "") {
   print "Freedom Database not found : param FREEDOM_DB\n";
-  exit;
+  exit( 1 );
 }
 
 $conf=getLDAPconf(getParam("NU_LDAP_KIND"));
 if (! $conf) {
   print "Kind of LDAP database must be defined: parameter NU_LDAP_KIND.\n";
-  exit;
-  
- }
+  exit( 1 );
+}
 
 $dryrun = getHttpVars('dryrun','N');
 $verbose = getHttpVars('verbose', 'N');
-
 $verbose = ($verbose=='Y')?true:false;
+
+$onlygroups = getHttpVars('onlygroups', 'N');
+$onlygroups = ($onlygroups=='Y')?true:false;
 
 /**
  * return LDAP AD information from the $login
@@ -211,6 +203,10 @@ foreach ($groups as $sid=>$group) {
   }
 }
 
+if( $onlygroups ) {
+	exit( 0 );
+}
+
 $userdn = array();
 
 foreach ($groupdn as $group => $v) {
@@ -282,5 +278,7 @@ foreach ($groupdn as $group => $v) {
     }
   } 
 }
+
+exit( 0 );
 
 ?>
