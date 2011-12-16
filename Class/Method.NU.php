@@ -80,12 +80,16 @@ function refreshFromLDAP()
             );
             foreach ($dnmembers as $k => $dnmember) {
                 $err = $this->getADDN($dnmember, $infogrp);
-                $gid = $infogrp["objectsid"];
-                $err = createLDAPGroup($gid, $dg);
                 if ($err == "") {
-                    $err = $dg->addFile($this->initid);
-                    $tnew_docgroupid[] = $dg->initid;
-                    if ((!in_array($dg->initid, $t_docgroupid)) && ($err == "")) $this->AddComment(sprintf(_("Add to group %s") , $dg->title));
+                    $gid = $infogrp["objectsid"];
+                    $err = createLDAPGroup($gid, $dg);
+                    if ($err == "") {
+                        if (is_object($dg)) {
+                            $err = $dg->addFile($this->initid);
+                            $tnew_docgroupid[] = $dg->initid;
+                            if ((!in_array($dg->initid, $t_docgroupid)) && ($err == "")) $this->AddComment(sprintf(_("Add to group %s") , $dg->title));
+                        }
+                    }
                 }
             }
         }
@@ -250,8 +254,8 @@ function getADDN($dn, &$info)
                 }
             }
         } else {
-            if ($count == 0) $err = sprintf(_("Cannot find group [%s]") , $login);
-            else $err = sprintf(_("Find mutiple grp with same login  [%s]") , $login);
+            if ($count == 0) $err = sprintf(_("Cannot find group [%s]") , $dn);
+            else $err = sprintf(_("Find mutiple grp with same login  [%s]") , $dn);
         }
         
         ldap_close($ds);
