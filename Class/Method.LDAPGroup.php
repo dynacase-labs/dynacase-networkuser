@@ -11,11 +11,6 @@ var $defaultview = "FDL:VIEWBODYCARD"; // use default view
 
 function postModify()
 {
-    $err = $this->refreshMailMembersOnChange();
-    if ($err != '') {
-        return $err;
-    }
-    
-    return '';
+    return parent::postModify();
 }
 ?>
