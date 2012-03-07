@@ -1,62 +1,76 @@
 <?php
-
-/**
+/*
  * @author Anakeen
  * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
+ * @package NU
  */
-
-// ---------------------------------------------------------------
-// $Id: NU_init.php.in,v 1.6 2007/12/20 08:54:21 eric Exp $
-// $Source: /home/cvsroot/anakeen/freedom/networkuser/NU_init.php.in,v $
-// ---------------------------------------------------------------
 
 global $app_const;
 
-$app_const= array(
-		  "INIT" => "yes",
-		  "VERSION" => "@VERSION@-@RELEASE@",
-		  "NU_LDAP_HOST"    =>array("val"=>"",
-				       "descr"=>N_("host of the LDAP"),
-				       "global"=>"Y",
-				       "user"=>"N"),
-		  "NU_LDAP_PORT"    =>array("val"=>"",
-				       "descr"=>N_("port of the LDAP"),
-				       "global"=>"Y",
-				       "user"=>"N"),
-		  "NU_LDAP_MODE"    =>array("val"=>"plain",
-				       "descr"=>N_("LDAP connection mode"),
-				       "global"=>"Y",
-				       "user"=>"N",
-				       "kind"=>"enum(plain|ssl|tls)"),
-		  "NU_LDAP_GROUP_BASE_DN"    =>array("val"=>"",
-						     "descr"=>N_("base DN for LDAP groups"),
-						     "global"=>"Y",
-						     "user"=>"N"),
-		  "NU_LDAP_GROUP_FILTER"    =>array("val"=>"",
-						    "descr"=>N_("LDAP group filter"),
-						    "global"=>"Y",
-						    "user"=>"N"),
-		  "NU_LDAP_USER_BASE_DN"    =>array("val"=>"",
-						    "descr"=>N_("base DN for LDAP users"),
-						    "global"=>"Y",
-						    "user"=>"N"),
-		  "NU_LDAP_USER_FILTER"    =>array("val"=>"",
-						   "descr"=>N_("LDAP user filter"),
-						   "global"=>"Y",
-						   "user"=>"N"),
-		  "NU_LDAP_BINDDN"    =>array("val"=>"",
-					 "descr"=>N_("DN of user which can access of all user and group of the LDAP"),
-					 "global"=>"Y",
-					 "user"=>"N"),
-		  "NU_LDAP_PASSWORD"    =>array("val"=>"",
-					   "global"=>"Y",
-					   "kind"=>"password",
-					   "descr"=>N_("password of the DN"),
-					   "user"=>"N"),
-		  "NU_LDAP_KIND"    =>array("val"=>"",
-					   "global"=>"Y",
-					   "descr"=>N_("kind of users LDAP for authentification"),
-					   "kind"=>"enum(AD|POSIX|INET)")
-		  );
-
+$app_const = array(
+    "INIT" => "yes",
+    "VERSION" => "@VERSION@-@RELEASE@",
+    "NU_LDAP_HOST" => array(
+        "val" => "",
+        "descr" => N_("host of the LDAP") ,
+        "global" => "Y",
+        "user" => "N"
+    ) ,
+    "NU_LDAP_PORT" => array(
+        "val" => "",
+        "descr" => N_("port of the LDAP") ,
+        "global" => "Y",
+        "user" => "N"
+    ) ,
+    "NU_LDAP_MODE" => array(
+        "val" => "plain",
+        "descr" => N_("LDAP connection mode") ,
+        "global" => "Y",
+        "user" => "N",
+        "kind" => "enum(plain|ssl|tls)"
+    ) ,
+    "NU_LDAP_GROUP_BASE_DN" => array(
+        "val" => "",
+        "descr" => N_("base DN for LDAP groups") ,
+        "global" => "Y",
+        "user" => "N"
+    ) ,
+    "NU_LDAP_GROUP_FILTER" => array(
+        "val" => "",
+        "descr" => N_("LDAP group filter") ,
+        "global" => "Y",
+        "user" => "N"
+    ) ,
+    "NU_LDAP_USER_BASE_DN" => array(
+        "val" => "",
+        "descr" => N_("base DN for LDAP users") ,
+        "global" => "Y",
+        "user" => "N"
+    ) ,
+    "NU_LDAP_USER_FILTER" => array(
+        "val" => "",
+        "descr" => N_("LDAP user filter") ,
+        "global" => "Y",
+        "user" => "N"
+    ) ,
+    "NU_LDAP_BINDDN" => array(
+        "val" => "",
+        "descr" => N_("DN of user which can access of all user and group of the LDAP") ,
+        "global" => "Y",
+        "user" => "N"
+    ) ,
+    "NU_LDAP_PASSWORD" => array(
+        "val" => "",
+        "global" => "Y",
+        "kind" => "password",
+        "descr" => N_("password of the DN") ,
+        "user" => "N"
+    ) ,
+    "NU_LDAP_KIND" => array(
+        "val" => "",
+        "global" => "Y",
+        "descr" => N_("kind of users LDAP for authentification") ,
+        "kind" => "enum(AD|POSIX|INET)"
+    )
+);
 ?>

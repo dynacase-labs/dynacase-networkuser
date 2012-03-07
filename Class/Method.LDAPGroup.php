@@ -5,12 +5,17 @@
  * @author Anakeen
  * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
  * @package NU
- */
-
-var $defaultview = "FDL:VIEWBODYCARD"; // use default view
-
-function postModify()
+*/
+/* @begin-method-ignore */
+class _LDAPGROUP extends _IGROUP
 {
-    return parent::postModify();
+    /* @end-method-ignore */
+    var $defaultview = "FDL:VIEWBODYCARD"; // use default view
+    function postModify()
+    {
+        return parent::postModify();
+    }
+    /* @begin-method-ignore */
 }
+/* @end-method-ignore */
 ?>

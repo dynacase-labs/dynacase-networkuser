@@ -8,19 +8,21 @@
   </replaces>
 
   <requires>
-    <module name="dynacase-platform" comp="lt" version="3.2.0" />
+    <module name="dynacase-platform" comp="ge" version="3.2.0" />
   </requires>
 
   <post-install>
-    <process command="programs/app_post NU I" />
+    <process command="./wsh.php --api=importDocuments --file=./NU/networkuser.ods" />
+    <process command="./wsh.php --api=importDocuments --file=./NU/networkuser-ldapmap.ods" />
+    <process command="./wsh.php --api=importDocuments --file=./NU/networkuser-init.ods" />
     <process command="programs/record_application NU" />
-    <process command="programs/app_post NU U" />
+    <process command="./wsh.php --api=importDocuments --file=./NU/networkuser.ods" />
     <process command="programs/update_catalog" />
   </post-install>
  
   <post-upgrade>
     <process command="programs/pre_migration NU" />
-    <process command="programs/app_post NU U" />
+    <process command="./wsh.php --api=importDocuments --file=./NU/networkuser.ods" />
     <process command="programs/record_application NU" />
     <process command="programs/post_migration NU" />
     <process command="programs/update_catalog" />
