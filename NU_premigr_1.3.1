@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ -z "$pgservice_core" ]; then
+	echo "Undefined or empty pgservice_core!"
+	exit 1
+fi
+
+PGSERVICE="$pgservice_core" psql -t -c "UPDATE docfam set defval=replace(defval, '[us_iddomain|0]', '') where id in (select id from docfam where name = 'LDAPUSER' or name = 'LDAPGROUP') and defval ~ 'us_iddomain';"
+PGSERVICE="$pgservice_core" psql -t -c "UPDATE docfam set defval=replace(defval, '[us_iddomain|1]', '') where id in (select id from docfam where name = 'LDAPUSER' or name = 'LDAPGROUP') and defval ~ 'us_iddomain';"
+PGSERVICE="$pgservice_core" psql -t -c "UPDATE docfam set defval=replace(defval, '[us_domain|local]', '') where id in (select id from docfam where name = 'LDAPUSER' or name = 'LDAPGROUP') and defval ~ 'us_domain';"
+PGSERVICE="$pgservice_core" psql -t -c "UPDATE docfam set defval=replace(defval, '[us_domain|externe]', '') where id in (select id from docfam where name = 'LDAPUSER' or name = 'LDAPGROUP') and defval ~ 'us_domain';"
+PGSERVICE="$pgservice_core" psql -t -c "UPDATE docfam set defval=replace(defval, '[us_privcard|W]', '') where id in (select id from docfam where name = 'LDAPUSER' or name = 'LDAPUSER');"
+
+PGSERVICE="$pgservice_core" psql -t -c "delete from docattr where id in (':us_society', ':us_job', ':us_role', ':us_homephone', ':us_homeaddr', ':us_initials',':us_secr',':us_passwd',':us_workpostalcode', ':us_country', ':us_mobile', ':us_workaddr', ':us_pphone', ':us_workweb') and docid = (select id from docfam where name='LDAPUSER');"

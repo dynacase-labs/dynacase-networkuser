@@ -7,7 +7,7 @@
  * @package NU
 */
 /* @begin-method-ignore */
-class _LDAPUSER extends _IUSER
+class _LDAPUSER extends _NU_COMMON
 {
     /* @end-method-ignore */
     var $defaultview = "FDL:VIEWBODYCARD"; // use default view
@@ -28,7 +28,7 @@ class _LDAPUSER extends _IUSER
     function postCreated()
     {
         // ldapsearch -x -w anakeen -D "cn=administrateur,cn=users,dc=ad,dc=tlse,dc=i-cesam,dc=com" -b "dc=ad,dc=tlse,dc=i-cesam,dc=com" -h ad.tlse.i-cesam.com
-        $user = $this->getWUser();
+        $user = $this->getAccount();
         
         if (!$user) {
             $user = new User(""); // create new user
@@ -39,7 +39,6 @@ class _LDAPUSER extends _IUSER
             $this->wuser->lastname = 'To Define';
             $this->wuser->login = $login;
             $this->wuser->password_new = uniqid("ad");
-            $this->wuser->iddomain = "0";
             $this->wuser->famid = "LDAPUSER";
             $this->wuser->fid = $this->id;
             $err = $this->wuser->Add(true);
@@ -54,6 +53,9 @@ class _LDAPUSER extends _IUSER
             
         }
     }
+    /**
+     * @templateController
+     */
     function nu_edit()
     {
         $this->editattr(true);
