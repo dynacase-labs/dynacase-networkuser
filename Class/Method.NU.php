@@ -7,17 +7,25 @@
  * @package NU
 */
 /* @begin-method-ignore */
-class _NU_COMMON
+class _NU_COMMON extends _IGROUP
 {
+    public function existsLogin($a, $b)
+    {
+        // stub
+        return '';
+    }
     /* @end-method-ignore */
     /**
-     * Not write in FREEDOM Ldap
+     * Not write in Dynacase Ldap
      */
     function UseLdap()
     {
         return false;
     }
-    
+    /**
+     * @apiExpose
+     * @return bool|string
+     */
     function refreshFromLDAP()
     {
         include_once ("FDL/Lib.Usercard.php");
@@ -27,23 +35,26 @@ class _NU_COMMON
         $ldap_group_base_dn = getParam("NU_LDAP_GROUP_BASE_DN", "");
         
         $err = getLDAPFromLogin($this->getValue('us_login') , ($this->doctype == 'D') , $info);
-        
         $ldapmap = $this->getMapAttributes();
-        //   print_r2($ldapmap);
         foreach ($ldapmap as $k => $v) {
-            if ($v["ldapname"] && $v["ldapmap"] && ($v["ldapmap"][0] != ':') && ($info[strtolower($v["ldapname"]) ])) {
-                if (is_array($info['objectclass']) && !in_array($v['ldapclass'], $info['objectclass'])) {
-                    continue;
-                } else if (is_string($info['objectclass']) && $v['ldapclass'] != $info['objectclass']) {
-                    continue;
+            
+            $ldapName = strtolower($v["ldapname"]);
+            if ($ldapName && ($ldapName[0] != ':') && $info[$ldapName]) {
+                if ($v['ldapclass'] != 'top') {
+                    if (is_array($info['objectclass']) && !in_array($v['ldapclass'], $info['objectclass'])) {
+                        continue;
+                    } else if (is_string($info['objectclass']) && $v['ldapclass'] != $info['objectclass']) {
+                        continue;
+                    }
                 }
-                $val = $info[strtolower($v["ldapname"]) ];
+                $val = $info[$ldapName];
                 $att = $v["ldapmap"];
                 if ($val) {
-                    if (!seems_utf8($val)) $val = utf8_encode($val);
-                    $this->setValue($att, $val);
+                    if ((!is_array($val)) && !seems_utf8($val)) $val = utf8_encode($val);
+                    $err.= $this->setValue($att, $val);
                 }
-                //if ($val) print "--- $att:$val\n";
+                // if ($val) print "<br/>Set#--- $att:$val:$err<br/>\n";
+                // else print "noVal $att<br/>";
                 
             } //else print "*** ".$v["ldapmap"]."\n";
             
@@ -55,16 +66,17 @@ class _NU_COMMON
         $t_docgroupid = $this->getTValue("us_idgroup"); // memo group of the user
         $tnew_docgroupid = array();
         
-        $user = $this->getWUser();
+        $user = $this->getAccount();
         $userMailHasChanged = false;
         if ($user) {
-            if ($user->isgroup == 'Y') {
+            if ($user->accounttype == 'G') {
                 $user->firstname = "";
                 $user->lastname = $this->getValue("grp_name");
                 $user->mail = $this->getValue("grp_mail");
             } else {
                 $user->firstname = $this->getValue("us_fname");
                 $user->lastname = $this->getValue("us_lname");
+                $this->setValue("us_mail", $this->getValue("us_extmail"));
                 $user->mail = $this->getValue("us_mail");
                 if ($this->getOldValue('us_mail') != '') {
                     $userMailHasChanged = true;
@@ -72,6 +84,7 @@ class _NU_COMMON
             }
             $user->modify(true);
         }
+        $dg = null;
         /*
          * insert in LDAP/AD groups if group base dn is defined
         */
@@ -152,6 +165,9 @@ class _NU_COMMON
                 $doc = new_doc($this->dbaccess, $docid);
                 $uid = $doc->getValue("ldap_uniqid");
                 if ($uid) {
+                    /**
+                     * @var Dir $doc
+                     */
                     $err = $doc->delFile($this->initid);
                     if ($err == "") $this->AddComment(sprintf(_("Delete from group %s") , $doc->title));
                 }
@@ -201,6 +217,7 @@ class _NU_COMMON
      */
     function getADDN($dn, &$info)
     {
+        $err = '';
         include_once ("NU/Lib.NU.php");
         $ldaphost = getParam("NU_LDAP_HOST");
         $ldapport = getParam("NU_LDAP_PORT");
@@ -288,7 +305,7 @@ class _NU_COMMON
         $sug = array(
             "-"
         );
-        
+        $err = '';
         if ($login != "-") {
             if (preg_match('/^\s*$/', $login)) {
                 $err = _("the login must not be empty");
