@@ -106,6 +106,9 @@ Class freedomNuProvider extends Provider
      */
     public function bindLdap($conn, $bindDn, $bindPassword)
     {
+        if (strlen($bindDn) > 0 && strlen($bindPassword) == 0) {
+            return false;
+        }
         if (array_key_exists('fix_euro', $this->parms) && strtolower($this->parms{'fix_euro'}) == 'yes') {
             $bindPassword = preg_replace("/\xac/", "\x80", $bindPassword);
         }
