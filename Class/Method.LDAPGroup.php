@@ -11,11 +11,11 @@ class _LDAPGROUP extends _IGROUP
 {
     /* @end-method-ignore */
     var $defaultview = "FDL:VIEWBODYCARD"; // use default view
-    function postModify()
+    function postStore()
     {
-        return parent::postModify();
+        return parent::postStore();
     }
     /* @begin-method-ignore */
 }
 /* @end-method-ignore */
-?>
+

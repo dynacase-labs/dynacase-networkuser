@@ -13,28 +13,28 @@ class _LDAPUSER extends _NU_COMMON
     var $defaultview = "FDL:VIEWBODYCARD"; // use default view
     var $defaultedit = "FDL:EDITBODYCARD"; // use default view
     var $defaultcreate = "NU:NU_EDIT"; // use default view
-    function postModify()
+    function postStore()
     {
         // not call parent
         $err = $this->setGroups();
         if ($err == "") {
             $err = $this->RefreshDocUser(); // refresh from core database
-            //$errldap=$this->RefreshLdapCard();
-            //if ($errldap!="") AddWarningMsg($errldap);
             
+        }
+        if ($err) {
+            error_log(__METHOD__ . $err);
         }
     }
     
     function postCreated()
     {
-        // ldapsearch -x -w anakeen -D "cn=administrateur,cn=users,dc=ad,dc=tlse,dc=i-cesam,dc=com" -b "dc=ad,dc=tlse,dc=i-cesam,dc=com" -h ad.tlse.i-cesam.com
         $user = $this->getAccount();
         
         if (!$user) {
-            $user = new User(""); // create new user
+            $user = new Account(""); // create new user
             $this->wuser = & $user;
             
-            $login = $this->getValue("us_login");
+            $login = $this->getRawValue("us_login");
             $this->wuser->firstname = 'Unknown';
             $this->wuser->lastname = 'To Define';
             $this->wuser->login = $login;
@@ -49,8 +49,10 @@ class _LDAPUSER extends _NU_COMMON
             ));
             $this->refreshFromLDAP();
             
-            $err = parent::RefreshDocUser(); // refresh from core database
-            
+            $err.= parent::RefreshDocUser(); // refresh from core database
+            if ($err) {
+                error_log(__METHOD__ . $err);
+            }
         }
     }
     /**

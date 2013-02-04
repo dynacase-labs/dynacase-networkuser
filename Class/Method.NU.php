@@ -28,18 +28,19 @@ class _NU_COMMON extends _IGROUP
      */
     function refreshFromLDAP()
     {
-        include_once ("FDL/Lib.Usercard.php");
-        include_once ("NU/Lib.NU.php");
-        include_once ("NU/Lib.DocNU.php");
+        include_once "FDL/Lib.Usercard.php";
+        include_once "NU/Lib.NU.php";
+        include_once "NU/Lib.DocNU.php";
         
         $ldap_group_base_dn = getParam("NU_LDAP_GROUP_BASE_DN", "");
         
-        $err = getLDAPFromLogin($this->getValue('us_login') , ($this->doctype == 'D') , $info);
+        $err = getLDAPFromLogin($this->getRawValue('us_login') , ($this->doctype == 'D') , $info);
         $ldapmap = $this->getMapAttributes();
-        foreach ($ldapmap as $k => $v) {
+        foreach ($ldapmap as $v) {
             
             $ldapName = strtolower($v["ldapname"]);
-            if ($ldapName && ($ldapName[0] != ':') && $info[$ldapName]) {
+            
+            if ($ldapName && ($ldapName[0] != ':') && !empty($info[$ldapName])) {
                 if ($v['ldapclass'] != 'top') {
                     if (is_array($info['objectclass']) && !in_array($v['ldapclass'], $info['objectclass'])) {
                         continue;
@@ -53,17 +54,13 @@ class _NU_COMMON extends _IGROUP
                     if ((!is_array($val)) && !seems_utf8($val)) $val = utf8_encode($val);
                     $err.= $this->setValue($att, $val);
                 }
-                // if ($val) print "<br/>Set#--- $att:$val:$err<br/>\n";
-                // else print "noVal $att<br/>";
-                
-            } //else print "*** ".$v["ldapmap"]."\n";
-            
+            }
         }
-        $name = $this->getValue("GRP_NAME");
-        if ($name == "") $this->setValue("GRP_NAME", $this->getValue("US_LOGIN"));
+        $name = $this->getRawValue("GRP_NAME");
+        if ($name == "") $this->setValue("GRP_NAME", $this->getRawValue("US_LOGIN"));
         $err = $this->modify();
         
-        $t_docgroupid = $this->getTValue("us_idgroup"); // memo group of the user
+        $t_docgroupid = $this->getMultipleRawValues("us_idgroup"); // memo group of the user
         $tnew_docgroupid = array();
         
         $user = $this->getAccount();
@@ -71,14 +68,14 @@ class _NU_COMMON extends _IGROUP
         if ($user) {
             if ($user->accounttype == 'G') {
                 $user->firstname = "";
-                $user->lastname = $this->getValue("grp_name");
-                $user->mail = $this->getValue("grp_mail");
+                $user->lastname = $this->getRawValue("grp_name");
+                $user->mail = $this->getRawValue("grp_mail");
             } else {
-                $user->firstname = $this->getValue("us_fname");
-                $user->lastname = $this->getValue("us_lname");
-                $this->setValue("us_mail", $this->getValue("us_extmail"));
-                $user->mail = $this->getValue("us_mail");
-                if ($this->getOldValue('us_mail') != '') {
+                $user->firstname = $this->getRawValue("us_fname");
+                $user->lastname = $this->getRawValue("us_lname");
+                $this->setValue("us_mail", $this->getRawValue("us_extmail"));
+                $user->mail = $this->getRawValue("us_mail");
+                if ($this->getOldRawValue('us_mail') != '') {
                     $userMailHasChanged = true;
                 }
             }
@@ -90,12 +87,14 @@ class _NU_COMMON extends _IGROUP
         */
         if ($ldap_group_base_dn != '') {
             
-            $dnmembers = $info["memberof"];
+            $dnmembers = isset($info["memberof"]) ? $info["memberof"] : "";
             if ($dnmembers) {
-                if (!is_array($dnmembers)) $dnmembers = array(
-                    $dnmembers
-                );
-                foreach ($dnmembers as $k => $dnmember) {
+                if (!is_array($dnmembers)) {
+                    $dnmembers = array(
+                        $dnmembers
+                    );
+                }
+                foreach ($dnmembers as $dnmember) {
                     $err = $this->getADDN($dnmember, $infogrp);
                     if ($err == "") {
                         $gid = $infogrp["objectsid"];
@@ -104,57 +103,63 @@ class _NU_COMMON extends _IGROUP
                             if (is_object($dg)) {
                                 $err = $dg->addFile($this->initid);
                                 $tnew_docgroupid[] = $dg->initid;
-                                if ((!in_array($dg->initid, $t_docgroupid)) && ($err == "")) $this->AddComment(sprintf(_("Add to group %s") , $dg->title));
+                                if ((!in_array($dg->initid, $t_docgroupid)) && ($err == "")) {
+                                    $this->addHistoryEntry(sprintf(_("Add to group %s") , $dg->title));
+                                }
                             }
                         }
                     }
                 }
             }
             
-            $dnmembers = $info["primarygroupid"];
+            $dnmembers = isset($info["primarygroupid"]) ? $info["primarygroupid"] : "";
             if ($dnmembers) { // for user/group Active Directory
                 if (!is_array($dnmembers)) $dnmembers = array(
                     $dnmembers
                 );
                 
-                foreach ($dnmembers as $k => $pgid) {
-                    //      print "<p>Find2 Primary group:$dnmember</p>";
+                foreach ($dnmembers as $pgid) {
                     $basesid = substr($info["objectsid"], 0, strrpos($info["objectsid"], "-"));
                     $gid = $basesid . "-" . $pgid;
                     $err = createLDAPGroup($gid, $dg);
                     if ($err == "") {
                         $err = $dg->addFile($this->initid);
                         $tnew_docgroupid[] = $dg->initid;
-                        if ((!in_array($dg->initid, $t_docgroupid)) && ($err == "")) $this->AddComment(sprintf(_("Add to group %s") , $dg->title));
+                        if ((!in_array($dg->initid, $t_docgroupid)) && ($err == "")) {
+                            $this->addHistoryEntry(sprintf(_("Add to group %s") , $dg->title));
+                        }
                     }
                 }
             }
             
             if ($this->doctype != 'D') { // for user posixAccount
-                $gid = $info["gidnumber"];
+                $gid = isset($info["gidnumber"]) ? $info["gidnumber"] : "";
                 if ($gid) {
                     $err = createLDAPGroup($gid, $dg);
                     if ($err == "") {
                         $err = $dg->addFile($this->initid);
                         $tnew_docgroupid[] = $dg->initid;
-                        if ((!in_array($dg->initid, $t_docgroupid)) && ($err == "")) $this->AddComment(sprintf(_("Add to group %s") , $dg->title));
+                        if ((!in_array($dg->initid, $t_docgroupid)) && ($err == "")) {
+                            $this->addHistoryEntry(sprintf(_("Add to group %s") , $dg->title));
+                        }
                     }
                 }
             } else {
                 // for group posixGroup
-                $dnmembers = $info["memberuid"];
+                $dnmembers = isset($info["memberuid"]) ? $info["memberuid"] : "";
                 if ($dnmembers) { // for user/group Active Directory
                     if (!is_array($dnmembers)) $dnmembers = array(
                         $dnmembers
                     );
                     
-                    foreach ($dnmembers as $k => $gid) {
-                        //	print "<p>Find Membeers UIds group:$gid</p>";
+                    foreach ($dnmembers as $gid) {
                         $docu = getDocFromUniqId($gid);
                         if ($docu) {
-                            $err = $this->addFile($docu->initid);
+                            $err = $this->insertDocument($docu->initid);
                             $tnew_docgroupid[] = $dg->initid;
-                            if ((!in_array($dg->initid, $t_docgroupid)) && ($err == "")) $this->AddComment(sprintf(_("Add to group %s") , $dg->title));
+                            if ((!in_array($dg->initid, $t_docgroupid)) && ($err == "")) {
+                                $this->addHistoryEntry(sprintf(_("Add to group %s") , $dg->title));
+                            }
                         }
                     }
                 }
@@ -163,13 +168,15 @@ class _NU_COMMON extends _IGROUP
             $tdiff = array_diff($t_docgroupid, $tnew_docgroupid);
             foreach ($tdiff as $docid) {
                 $doc = new_doc($this->dbaccess, $docid);
-                $uid = $doc->getValue("ldap_uniqid");
+                $uid = $doc->getRawValue("ldap_uniqid");
                 if ($uid) {
                     /**
                      * @var Dir $doc
                      */
-                    $err = $doc->delFile($this->initid);
-                    if ($err == "") $this->AddComment(sprintf(_("Delete from group %s") , $doc->title));
+                    $err = $doc->removeDocument($this->initid);
+                    if ($err == "") {
+                        $this->addHistoryEntry(sprintf(_("Delete from group %s") , $doc->title));
+                    }
                 }
             }
         }
@@ -178,13 +185,13 @@ class _NU_COMMON extends _IGROUP
         if ($userMailHasChanged) {
             $coreGroupIdList = array();
             
-            $freedomGroupIdList = $this->getTValue('us_idgroup');
+            $freedomGroupIdList = $this->getMultipleRawValues('us_idgroup');
             foreach ($freedomGroupIdList as $id) {
                 $doc = new_Doc($this->dbaccess, $id);
                 if (!is_object($doc) || !$doc->isAlive()) {
                     continue;
                 }
-                array_push($coreGroupIdList, $doc->getValue('us_whatid'));
+                array_push($coreGroupIdList, $doc->getRawValue('us_whatid'));
             }
             refreshGroups($coreGroupIdList);
         }
@@ -218,11 +225,10 @@ class _NU_COMMON extends _IGROUP
     function getADDN($dn, &$info)
     {
         $err = '';
-        include_once ("NU/Lib.NU.php");
+        include_once "NU/Lib.NU.php";
         $ldaphost = getParam("NU_LDAP_HOST");
         $ldapport = getParam("NU_LDAP_PORT");
         $ldapmode = getParam("NU_LDAP_MODE");
-        $ldapbase = getParam("NU_LDAP_GROUP_BASE_DN");
         $ldappw = getParam("NU_LDAP_PASSWORD");
         $ldapbinddn = getParam("NU_LDAP_BINDDN");
         
@@ -267,7 +273,6 @@ class _NU_COMMON extends _IGROUP
                         } else {
                             if ($v["count"] == 1) $info[$k] = $v[0];
                             else {
-                                //	    unset($v["count"]);
                                 if (is_array($v)) unset($v["count"]);
                                 $info[$k] = $v;
                             }
@@ -298,6 +303,7 @@ class _NU_COMMON extends _IGROUP
     /**
      * verify if the login syntax is correct and if the login not already exist
      * @param string $login login to test
+     * @param $iddomain
      * @return array 2 items $err & $sug for view result of the constraint
      */
     function ConstraintLogin($login, $iddomain)
