@@ -7,12 +7,13 @@
  * @package NU
 */
 
-include_once ("NU/Lib.ConfLDAP.php");
+include_once "NU/Lib.ConfLDAP.php";
 /**
  * return LDAP AD information from SID
  * @param string $sid ascii unique id
- * @param string $ldapuniqid ldap attribute for filter unique id
  * @param array &$info ldap information
+ * @param $isgroup
+ * @internal param string $ldapuniqid ldap attribute for filter unique id
  * @return string error message - empty means no error
  */
 function getAdInfoFromSid($sid, &$info, $isgroup)
@@ -33,6 +34,8 @@ function getAdInfoFromSid($sid, &$info, $isgroup)
 /**
  * return LDAP AD information from the $login
  * @param string $login connection identificator
+ * @param $ldapclass
+ * @param $ldapbindloginattribute
  * @param array &$info ldap information
  * @return string error message - empty means no error
  */
@@ -60,7 +63,8 @@ function getLDAPUserFrom($login, $ldapclass, $ldapbindloginattribute, &$info)
 
 function getLDAPFrom($ldapbase, $addfilter, $login, $ldapclass, $ldapbindloginattribute, &$info)
 {
-    include_once ("NU/Lib.NU.php");
+    include_once "NU/Lib.NU.php";
+    $err = "";
     $ldaphost = getParam("NU_LDAP_HOST");
     $ldapport = getParam("NU_LDAP_PORT");
     $ldapmode = getParam("NU_LDAP_MODE");
@@ -85,9 +89,13 @@ function getLDAPFrom($ldapbase, $addfilter, $login, $ldapclass, $ldapbindloginat
         }
         
         $r = @ldap_bind($ds, $ldapbinddn, $ldappw);
-        if (!$r) return ldap_error($ds);
+        if (!$r) {
+            return ldap_error($ds);
+        }
         // Search login entry
-        if (!seems_utf8($login)) $login = utf8_encode($login);
+        if (!seems_utf8($login)) {
+            $login = utf8_encode($login);
+        }
         
         $filter = sprintf("(&(objectClass=%s)(%s=%s)%s)", $ldapclass, $ldapbindloginattribute, $login, $addfilter);
         $sr = @ldap_search($ds, $ldapbase, $filter);
@@ -97,24 +105,23 @@ function getLDAPFrom($ldapbase, $addfilter, $login, $ldapclass, $ldapbindloginat
             return $err;
         }
         $count = ldap_count_entries($ds, $sr);
-        //print "ldap_search($ds, $ldapbase, $filter\n"; print "found:$count\n";
         if ($count == 1) {
             $info1 = ldap_get_entries($ds, $sr);
             $info0 = $info1[0];
             $entry = ldap_first_entry($ds, $sr);
-            //      print "<pre>";print_r($info);print "</pre>";
             foreach ($info0 as $k => $v) {
                 if (!is_numeric($k)) {
-                    //print "$k:[".print_r2(ldap_get_values($ds, $entry, $k))."]";
                     if ($k == "objectsid") {
                         // get binary value from ldap and decode it
                         $values = ldap_get_values_len($ds, $entry, $k);
                         $info[$k] = sid_decode($values[0]);
                     } else {
-                        if ($v["count"] == 1) $info[$k] = $v[0];
-                        else {
-                            //	    unset($v["count"]);
-                            if (is_array($v)) unset($v["count"]);
+                        if (isset($v["count"]) && $v["count"] == 1) {
+                            $info[$k] = $v[0];
+                        } else {
+                            if (is_array($v)) {
+                                unset($v["count"]);
+                            }
                             $info[$k] = $v;
                         }
                     }
@@ -135,6 +142,8 @@ function getLDAPFrom($ldapbase, $addfilter, $login, $ldapclass, $ldapbindloginat
 /**
  * serach LDAP AD information which match the $login
  * @param string $login connection identificator
+ * @param $ldapclass
+ * @param $ldapbindloginattribute
  * @param array &$info ldap information
  * @return string error message - empty means no error
  */
@@ -162,7 +171,8 @@ function searchLDAPUserFrom($login, $ldapclass, $ldapbindloginattribute, &$info)
 
 function searchLDAPFrom($ldapbase, $addfilter, $login, $ldapclass, $ldapbindloginattribute, &$tinfo)
 {
-    include_once ("NU/Lib.NU.php");
+    include_once "NU/Lib.NU.php";
+    $err = "";
     $ldaphost = getParam("NU_LDAP_HOST");
     $ldapport = getParam("NU_LDAP_PORT");
     $ldapmode = getParam("NU_LDAP_MODE");
@@ -187,7 +197,9 @@ function searchLDAPFrom($ldapbase, $addfilter, $login, $ldapclass, $ldapbindlogi
         }
         
         $r = @ldap_bind($ds, $ldapbinddn, $ldappw);
-        if (!$r) return ldap_error($ds);
+        if (!$r) {
+            return ldap_error($ds);
+        }
         // Search login entry
         if ($login) {
             $filter = sprintf("(&(objectClass=%s)(|(cn=*%s*)(%s=*%s*))%s)", $ldapclass, $login, $ldapbindloginattribute, $login, $addfilter);
@@ -208,13 +220,10 @@ function searchLDAPFrom($ldapbase, $addfilter, $login, $ldapclass, $ldapbindlogi
         }
         
         while ($entry) {
-            //      print "<pre>";print_r($info);print "</pre>";
             $info0 = ldap_get_attributes($ds, $entry);
             $info = array();
-            //      print_r2($attrs);
             foreach ($info0 as $k => $v) {
                 if (!is_numeric($k)) {
-                    //print "$k:[".print_r2(ldap_get_values($ds, $entry, $k))."]";
                     if ($k == "objectsid") {
                         // get binary value from ldap and decode it
                         $values = ldap_get_values_len($ds, $entry, $k);
@@ -222,7 +231,6 @@ function searchLDAPFrom($ldapbase, $addfilter, $login, $ldapclass, $ldapbindlogi
                     } else {
                         if ($v["count"] == 1) $info[$k] = $v[0];
                         else {
-                            //	    unset($v["count"]);
                             if (is_array($v)) unset($v["count"]);
                             $info[$k] = $v;
                         }
@@ -265,9 +273,10 @@ function getLDAPFromLogin($login, $isgroup, &$info)
 }
 /**
  * return LDAP AD information from the $login
- * @param string $login connection identificator
+ * @param $uid
  * @param bool $isgroup true if group, false if user
  * @param array &$info ldap information
+ * @internal param string $login connection identificator
  * @return string error message - empty means no error
  */
 function getLDAPFromUid($uid, $isgroup, &$info)
@@ -335,9 +344,13 @@ function sid_encode($sid)
         $tpack["e" . ($i + 1) ] = floatval($tid[$i + 3]);
     }
     
-    if ($number == 5) $osid = pack("H2H2nNV*", $tpack["rev"], $tpack["b"], $tpack["c"], $tpack["d"], $tpack["e1"], $tpack["e2"], $tpack["e3"], $tpack["e4"], $tpack["e5"]);
+    if ($number == 5) {
+        $osid = pack("H2H2nNV*", $tpack["rev"], $tpack["b"], $tpack["c"], $tpack["d"], $tpack["e1"], $tpack["e2"], $tpack["e3"], $tpack["e4"], $tpack["e5"]);
+    }
     
-    if ($number == 2) $osid = pack("H2H2nNV*", $tpack["rev"], $tpack["b"], $tpack["c"], $tpack["d"], $tpack["e1"], $tpack["e2"]);
+    if ($number == 2) {
+        $osid = pack("H2H2nNV*", $tpack["rev"], $tpack["b"], $tpack["c"], $tpack["d"], $tpack["e1"], $tpack["e2"]);
+    }
     return $osid;
 }
 /**
@@ -367,7 +380,6 @@ function sid_decode($osid)
 
 function getLDAPUri($mode, $host, $port)
 {
-    $uri = '';
     
     if ($mode != 'plain' && $mode != 'ssl' && $mode != 'tls') {
         return false;
@@ -389,4 +401,4 @@ function getLDAPUri($mode, $host, $port)
     
     return $uri;
 }
-?>
+

@@ -15,7 +15,7 @@ define("SKIPCOLOR", '[1;31;40m');
 define("UPDTCOLOR", '[1;32;40m');
 define("STOPCOLOR", '[0m');
 
-$dbaccess = $appl->GetParam("FREEDOM_DB");
+$dbaccess = GetParam("FREEDOM_DB");
 if ($dbaccess == "") {
     print "Freedom Database not found : param FREEDOM_DB\n";
     exit(1);
@@ -29,10 +29,69 @@ if (!$conf) {
 
 $onlygroups = getHttpVars('onlygroups', 'N');
 $onlygroups = ($onlygroups == 'Y') ? true : false;
+
+$groups = array();
+$err = searchinLDAPGroup($conf, $groups);
+if ($err) {
+    print "ERROR:$err\n";
+}
+
+foreach ($groups as $sid => $group) {
+    print "Search group $sid...";
+    $doc = getDocFromUniqId($sid, "LDAPGROUP");
+    
+    if (!$doc) {
+        $err = createLDAPGroup($sid, $doc);
+        if ($err != "") print SKIPCOLOR;
+        print "Create Group " . $doc->title;
+        if ($err != "") print "[$err]" . STOPCOLOR;
+        print "\n";
+    } else {
+        /* @var $doc _NU_COMMON */
+        $err = $doc->refreshFromLDAP();
+        if ($err == "") $doc->postStore();
+        if ($err != "") print SKIPCOLOR;
+        print "Refresh Group " . $doc->id . $doc->title;
+        if ($err != "") print "[$err]" . STOPCOLOR;
+        print "\n";
+    }
+}
+
+if ($onlygroups) {
+    exit(0);
+}
+
+$users = array();
+$err = searchinLDAPUser($conf, $users);
+if ($err) {
+    print "ERROR:$err\n";
+}
+
+foreach ($users as $sid => $user) {
+    print "Search user $sid...";
+    $doc = getDocFromUniqId($sid, "LDAPUSER");
+    if (!$doc) {
+        $err = createLDAPUser($sid, $doc);
+        if ($err != "") print SKIPCOLOR;
+        print "Create User " . $doc->title;
+        if ($err != "") print "[$err]" . STOPCOLOR;
+        print "\n";
+    } else {
+        $err = $doc->refreshFromLDAP();
+        if ($err == "") $doc->postStore();
+        if ($err != "") print SKIPCOLOR;
+        print "Refresh " . $doc->title;
+        if ($err != "") print "[$err]" . STOPCOLOR;
+        print "\n";
+    }
+}
+
+exit(0);
 /**
  * return LDAP AD information from the $login
- * @param string $login connection identificator
+ * @param $conf
  * @param array &$info ldap information
+ * @internal param string $login connection identificator
  * @return string error message - empty means no error
  */
 function searchinLDAPUser(&$conf, &$info)
@@ -61,6 +120,7 @@ function searchinLDAPGroup(&$conf, &$info)
 
 function searchinLDAP($ldapbase, $filter, $ldapuniqid, &$info)
 {
+    $err = "";
     $ldaphost = getParam("NU_LDAP_HOST");
     $ldapport = getParam("NU_LDAP_PORT");
     $ldapmode = getParam("NU_LDAP_MODE");
@@ -99,8 +159,6 @@ function searchinLDAP($ldapbase, $filter, $ldapuniqid, &$info)
                 return $err;
             }
             
-            $count = ldap_count_entries($ds, $sr);
-            
             $infos = ldap_get_entries($ds, $sr);
             $entry = ldap_first_entry($ds, $sr);
             
@@ -110,28 +168,36 @@ function searchinLDAP($ldapbase, $filter, $ldapuniqid, &$info)
                 $info1 = array();
                 foreach ($info0 as $k => $v) {
                     if (!is_numeric($k)) {
-                        //print "$k:[".print_r2(ldap_get_values($ds, $entry, $k))."]";
                         if ($k == "objectsid") {
                             // get binary value from ldap and decode it
                             $values = ldap_get_values_len($ds, $entry, $k);
                             $info1[$k] = sid_decode($values[0]);
                         } else {
-                            if ($v["count"] == 1) $info1[$k] = $v[0];
-                            else {
-                                //	    unset($v["count"]);
-                                if (is_array($v)) unset($v["count"]);
+                            if (isset($v["count"]) && $v["count"] == 1) {
+                                $info1[$k] = $v[0];
+                            } else {
+                                if (is_array($v)) {
+                                    unset($v["count"]);
+                                }
                                 $info1[$k] = $v;
                             }
                         }
-                        if ($k == $ldapuniqid) $sid = $info1[$k];
+                        if ($k == $ldapuniqid) {
+                            $sid = $info1[$k];
+                        }
                     }
                 }
-                if ($sid) $info[$sid] = $info1;
-                else $info[] = $info1;
+                if ($sid) {
+                    $info[$sid] = $info1;
+                } else {
+                    $info[] = $info1;
+                }
                 
                 $entry = ldap_next_entry($ds, $entry);
             }
-        } else $err = sprintf(_("Unable to bind to LDAP server %s") , $uri);
+        } else {
+            $err = sprintf(_("Unable to bind to LDAP server %s") , $uri);
+        }
         ldap_close($ds);
     } else {
         $err = sprintf(_("Unable to connect to LDAP server %s") , $uri);
@@ -139,57 +205,3 @@ function searchinLDAP($ldapbase, $filter, $ldapuniqid, &$info)
     
     return $err;
 }
-
-$groups = array();
-$err = searchinLDAPGroup($conf, $groups);
-if ($err) print "ERROR:$err\n";
-
-foreach ($groups as $sid => $group) {
-    print "Search group $sid...";
-    $doc = getDocFromUniqId($sid, "LDAPGROUP");
-    
-    if (!$doc) {
-        $err = createLDAPGroup($sid, $doc);
-        if ($err != "") print SKIPCOLOR;
-        print "Create Group " . $doc->title;
-        if ($err != "") print "[$err]" . STOPCOLOR;
-        print "\n";
-    } else {
-        $err = $doc->refreshFromLDAP();
-        if ($err == "") $doc->postModify();
-        if ($err != "") print SKIPCOLOR;
-        print "Refresh Group " . $doc->id . $doc->title;
-        if ($err != "") print "[$err]" . STOPCOLOR;
-        print "\n";
-    }
-}
-
-if ($onlygroups) {
-    exit(0);
-}
-
-$users = array();
-$err = searchinLDAPUser($conf, $users);
-if ($err) print "ERROR:$err\n";
-
-foreach ($users as $sid => $user) {
-    print "Search user $sid...";
-    $doc = getDocFromUniqId($sid, "LDAPUSER");
-    if (!$doc) {
-        $err = createLDAPUser($sid, $doc);
-        if ($err != "") print SKIPCOLOR;
-        print "Create User " . $doc->title;
-        if ($err != "") print "[$err]" . STOPCOLOR;
-        print "\n";
-    } else {
-        $err = $doc->refreshFromLDAP();
-        if ($err == "") $doc->postModify();
-        if ($err != "") print SKIPCOLOR;
-        print "Refresh " . $doc->title;
-        if ($err != "") print "[$err]" . STOPCOLOR;
-        print "\n";
-    }
-}
-
-exit(0);
-?>

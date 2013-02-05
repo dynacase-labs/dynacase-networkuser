@@ -45,7 +45,9 @@ function getLDAPconf($type, $attr = false)
             break;
     }
     
-    if ($conf && $attr) return $conf[$attr];
+    if ($conf && $attr) {
+        return $conf[$attr];
+    }
     return $conf;
 }
 ?>

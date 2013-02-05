@@ -11,18 +11,16 @@
 /**
  */
 
-include_once ("WHAT/Class.Provider.php");
-
 Class freedomNuProvider extends Provider
 {
     
     public function validateCredential($username, $password)
     {
-        include_once ('NU/Lib.NU.php');
+        if (file_exists('NU/Lib.NU.php')) {
+            /** @noinspection PhpIncludeInspection */
+            include_once 'NU/Lib.NU.php';
+        }
         
-        global $action;
-        
-        $db = getParam("FREEDOM_DB");
         $host = getParam("NU_LDAP_HOST", '');
         $port = getParam("NU_LDAP_PORT", '');
         $mode = getParam("NU_LDAP_MODE", '');
@@ -51,7 +49,7 @@ Class freedomNuProvider extends Provider
         }
         // Search user DN in LDAP
         $info = array();
-        $r = $this->getLDAPEntryFromLogin($uri, $opts, $root, $rootpw, $base, $username, $info);
+        $this->getLDAPEntryFromLogin($uri, $opts, $root, $rootpw, $base, $username, $info);
         if (count($info) <= 0) {
             error_log(__CLASS__ . "::" . __FUNCTION__ . " " . sprintf("search for user '%s' returned empty result!", $username));
             return false;
@@ -106,6 +104,9 @@ Class freedomNuProvider extends Provider
      */
     public function bindLdap($conn, $bindDn, $bindPassword)
     {
+        if (strlen($bindDn) > 0 && strlen($bindPassword) == 0) {
+            return false;
+        }
         if (array_key_exists('fix_euro', $this->parms) && strtolower($this->parms{'fix_euro'}) == 'yes') {
             $bindPassword = preg_replace("/\xac/", "\x80", $bindPassword);
         }
@@ -143,8 +144,8 @@ Class freedomNuProvider extends Provider
      */
     public function getLDAPEntryFromLogin($uri, &$uriOpts, $bindDn, $bindPassword, $base, $login, &$tinfo)
     {
-        @include_once ('NU/Lib.NU.php');
-        @include_once ('NU/Lib.ConfLDAP.php');
+        require_once 'NU/Lib.NU.php';
+        require_once 'NU/Lib.ConfLDAP.php';
         
         $tinfo = array();
         
@@ -222,12 +223,8 @@ Class freedomNuProvider extends Provider
     
     public function initializeUser($username)
     {
-        @include_once ('WHAT/Class.User.php');
-        @include_once ('FDL/Class.Doc.php');
-        @include_once ('WHAT/Class.Session.php');
         
         global $action;
-        $err = "";
         
         $CoreNull = "";
         $core = new Application();
@@ -235,13 +232,12 @@ Class freedomNuProvider extends Provider
         $core->session = new Session();
         $action = new Action();
         $action->Set("", $core);
-        $action->user = new User("", 1); //create user as admin
-        $wu = new User();
+        $action->user = new Account("", 1); //create user as admin
+        $wu = new Account();
         $wu->firstname = '--';
         $wu->lastname = '(from ldap/ad) ' . $username;
         $wu->login = $username;
         $wu->password_new = uniqid("nu");
-        $wu->iddomain = "0";
         $wu->famid = "LDAPUSER";
         
         $err = $wu->Add();
@@ -250,14 +246,13 @@ Class freedomNuProvider extends Provider
             return sprintf(_("cannot create user %s: %s") , $username, $err);
         }
         
-        include_once ("FDL/Class.DocFam.php");
         $dbaccess = getParam("FREEDOM_DB");
         
         $du = new_doc($dbaccess, $wu->fid);
         if (!$du->isAlive()) {
             $err = $wu->delete();
             $core->session->close();
-            return sprintf(_("cannot create user %s: %s") , $login, $err . " (freedom)");
+            return sprintf(_("cannot create user %s: %s") , $username, $err . " (NU)");
         }
         
         $du->setValue("us_whatid", $wu->id);
@@ -267,7 +262,7 @@ Class freedomNuProvider extends Provider
             $core->session->close();
             return $err;
         }
-        
+        /* @var $du _NU_COMMON */
         $err = $du->refreshFromLDAP();
         if ($err != "") {
             error_log(__CLASS__ . "::" . __FUNCTION__ . " " . sprintf("Error refreshing user '%s' from LDAP err=[%s]", $username, $err));
@@ -286,4 +281,3 @@ Class freedomNuProvider extends Provider
         return $err;
     }
 }
-?>

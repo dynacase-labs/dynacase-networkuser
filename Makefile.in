@@ -11,7 +11,7 @@ applib = FDL
 
 export pubdir utildir appname applib
 
-TAR = gtar
+TAR = tar
 GZIP_ENV = --best
 TOP_MODULES = nu.php
 export targetdir PACKAGE
@@ -23,7 +23,7 @@ pages_not_xml = info.xml
 include $(utildir)/PubRule
 
 DISTFILES += $(SUBDIR) networkuser.ods \
-            RELEASE VERSION 
+            RELEASE VERSION
 
 $(pubdir)/EXTERNALS :
 	mkdir -p $@
@@ -35,4 +35,4 @@ $(pubdir)/EXTERNALS/nu.php: $(pubdir)/EXTERNALS nu.php
 $(pubdir)/$(appname)/networkuser.ods : networkuser.ods
 	cp networkuser.ods $(pubdir)/$(appname)
 
-publish: $(pubdir)/$(appname)/networkuser.ods $(pubdir)/EXTERNALS/nu.php 
+publish: $(pubdir)/$(appname)/networkuser.ods $(pubdir)/EXTERNALS/nu.php
