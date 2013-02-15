@@ -306,7 +306,7 @@ class _NU_COMMON extends _IGROUP
      * @param $iddomain
      * @return array 2 items $err & $sug for view result of the constraint
      */
-    function ConstraintLogin($login, $iddomain)
+    function checkLogin($login, $iddomain)
     {
         $sug = array(
             "-"
