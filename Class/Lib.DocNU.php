@@ -93,6 +93,11 @@ function createLDAPFamily($sid, &$doc, $family, $isgroup)
     return "";
 }
 
+/**
+ * @param string $sid identifier
+ * @param _LDAPGROUP $doc
+ * @return bool|string
+ */
 function createLDAPGroup($sid, &$doc)
 {
     if (!$sid) return false;
@@ -100,6 +105,11 @@ function createLDAPGroup($sid, &$doc)
     return $err;
 }
 
+/**
+ * @param string $sid identifier
+ * @param _LDAPUSER $doc
+ * @return bool|string
+ */
 function createLDAPUser($sid, &$doc)
 {
     if (!$sid) return false;
