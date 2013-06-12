@@ -81,6 +81,9 @@ class _NU_COMMON extends _IGROUP
             }
             $user->modify(true);
         }
+        /**
+         * @var _LDAPGROUP $dg
+         */
         $dg = null;
         /*
          * insert in LDAP/AD groups if group base dn is defined
@@ -98,6 +101,9 @@ class _NU_COMMON extends _IGROUP
                     $err = $this->getADDN($dnmember, $infogrp);
                     if ($err == "") {
                         $gid = $infogrp["objectsid"];
+                        /**
+                         * @var _LDAPGROUP $dg
+                         */
                         $err = createLDAPGroup($gid, $dg);
                         if ($err == "") {
                             if (is_object($dg)) {
@@ -203,9 +209,15 @@ class _NU_COMMON extends _IGROUP
         if (count($groupList) <= 0) {
             $ldapUserFamId = getIdFromName($this->dbaccess, 'LDAPUSER');
             if (is_numeric($ldapUserFamId)) {
+                /**
+                 * @var _LDAPUSER $ldapUserFam
+                 */
                 $ldapUserFam = new_Doc($this->dbaccess, $ldapUserFamId, true);
                 if (is_object($ldapUserFam)) {
                     $defaultGroupId = $ldapUserFam->getFamilyParameterValue('US_DEFAULTGROUP');
+                    /**
+                     * @var _IGROUP $defaultGroup
+                     */
                     $defaultGroup = new_Doc($this->dbaccess, $defaultGroupId, true);
                     if (is_object($defaultGroup) && $defaultGroup->isAlive()) {
                         $err = $defaultGroup->insertDocument($this->initid);
