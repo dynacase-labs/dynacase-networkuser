@@ -13,18 +13,7 @@ class _LDAPUSER extends _NU_COMMON
     var $defaultview = "FDL:VIEWBODYCARD"; // use default view
     var $defaultedit = "FDL:EDITBODYCARD"; // use default view
     var $defaultcreate = "NU:NU_EDIT"; // use default view
-    function postStore()
-    {
-        // not call parent
-        $err = $this->setGroups();
-        if ($err == "") {
-            $err = $this->RefreshDocUser(); // refresh from core database
-            
-        }
-        if ($err) {
-            error_log(__METHOD__ . $err);
-        }
-    }
+
     
     function postCreated()
     {
