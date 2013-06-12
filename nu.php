@@ -14,9 +14,9 @@ $login = $_SERVER['PHP_AUTH_USER'];
 if ($login) {
     if (!$sess_num) {
         // verify only  when session is out
-        include_once ('Class.User.php');
+        include_once ('Class.Account.php');
         include_once ('Class.Session.php');
-        $WHATUSER = new User();
+        $WHATUSER = new Account();
         if (!seems_utf8($login)) $login = utf8_encode($login);
         $login = trim($login);
         if ($WHATUSER->SetLoginName($login)) {
@@ -39,7 +39,7 @@ if ($login) {
                 $core->session = new Session();
                 $action = new Action();
                 $action->Set("", $core);
-                $action->user = new User("", 1); //create user as admin
+                $action->user = new Account("", 1); //create user as admin
                 $WHATUSER->firstname = 'Unknown Test';
                 $WHATUSER->lastname = 'To Define';
                 $WHATUSER->login = $login;

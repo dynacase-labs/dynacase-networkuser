@@ -101,7 +101,7 @@ class _NU_COMMON extends _IGROUP
                         $err = createLDAPGroup($gid, $dg);
                         if ($err == "") {
                             if (is_object($dg)) {
-                                $err = $dg->addFile($this->initid);
+                                $err = $dg->insertDocument($this->initid);
                                 $tnew_docgroupid[] = $dg->initid;
                                 if ((!in_array($dg->initid, $t_docgroupid)) && ($err == "")) {
                                     $this->addHistoryEntry(sprintf(_("Add to group %s") , $dg->title));
@@ -123,7 +123,7 @@ class _NU_COMMON extends _IGROUP
                     $gid = $basesid . "-" . $pgid;
                     $err = createLDAPGroup($gid, $dg);
                     if ($err == "") {
-                        $err = $dg->addFile($this->initid);
+                        $err = $dg->insertDocument($this->initid);
                         $tnew_docgroupid[] = $dg->initid;
                         if ((!in_array($dg->initid, $t_docgroupid)) && ($err == "")) {
                             $this->addHistoryEntry(sprintf(_("Add to group %s") , $dg->title));
@@ -137,7 +137,7 @@ class _NU_COMMON extends _IGROUP
                 if ($gid) {
                     $err = createLDAPGroup($gid, $dg);
                     if ($err == "") {
-                        $err = $dg->addFile($this->initid);
+                        $err = $dg->insertDocument($this->initid);
                         $tnew_docgroupid[] = $dg->initid;
                         if ((!in_array($dg->initid, $t_docgroupid)) && ($err == "")) {
                             $this->addHistoryEntry(sprintf(_("Add to group %s") , $dg->title));
@@ -205,10 +205,10 @@ class _NU_COMMON extends _IGROUP
             if (is_numeric($ldapUserFamId)) {
                 $ldapUserFam = new_Doc($this->dbaccess, $ldapUserFamId, true);
                 if (is_object($ldapUserFam)) {
-                    $defaultGroupId = $ldapUserFam->getParamValue('US_DEFAULTGROUP');
+                    $defaultGroupId = $ldapUserFam->getFamilyParameterValue('US_DEFAULTGROUP');
                     $defaultGroup = new_Doc($this->dbaccess, $defaultGroupId, true);
                     if (is_object($defaultGroup) && $defaultGroup->isAlive()) {
-                        $err = $defaultGroup->addFile($this->initid);
+                        $err = $defaultGroup->insertDocument($this->initid);
                     }
                 }
             }
