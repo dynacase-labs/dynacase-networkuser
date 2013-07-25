@@ -23,38 +23,38 @@ function getDocFromUniqId($sid, $famId = "")
         $search = new SearchDoc("", $famId);
         $search->setObjectReturn(true);
         $search->setSlice(1);
-        $search->addFilter("ldap_uniqid='%s'", $sid);
+        $search->addFilter("%s = '%s'", \Dcp\AttributeIdentifiers\Ldapuser::ldap_uniqid, $sid);
         $search->search();
         return $search->getNextDoc();
     };
-
+    
     if ($famId != '') {
         $ls = $searchElement($famId);
         if (is_object($ls)) {
             return $ls;
         }
     } else {
-        $ls = $searchElement("LDAPGROUP");
-         if (is_object($ls)) {
+        $ls = $searchElement(\Dcp\Family\Ldapgroup::familyName);
+        if (is_object($ls)) {
             return $ls;
         }
-        $ls = $searchElement("LDAPUSER");
-         if (is_object($ls)) {
+        $ls = $searchElement(\Dcp\Family\Ldapuser::familyName);
+        if (is_object($ls)) {
             return $ls;
         }
     }
-
+    
     return false;
 }
 
 function createLDAPFamily($sid, &$doc, $family, $isgroup)
 {
     $err = getAdInfoFromSid($sid, $infogrp, $isgroup);
-
+    
     if ($err == "") {
         $g = new Account("");
         $alogin = strtolower(getLDAPconf(getParam("NU_LDAP_KIND") , ($isgroup) ? "LDAP_GROUPLOGIN" : "LDAP_USERLOGIN"));
-
+        
         if (!seems_utf8($infogrp[$alogin])) {
             $infogrp[$alogin] = utf8_encode($infogrp[$alogin]);
         }
@@ -65,11 +65,11 @@ function createLDAPFamily($sid, &$doc, $family, $isgroup)
                     $infogrp[$k] = utf8_encode($v);
                 }
             }
-
+            
             $g->firstname = ($infogrp["givenname"] == "") ? $infogrp["cn"] : $infogrp["givenname"];
             $g->lastname = $infogrp["sn"];
             $g->login = $infogrp[$alogin];
-
+            
             $g->accounttype = ($isgroup) ? 'G' : 'U';
             $g->password_new = uniqid("ad");
             $g->famid = $family;
@@ -81,7 +81,7 @@ function createLDAPFamily($sid, &$doc, $family, $isgroup)
                 $dbaccess = getParam("FREEDOM_DB");
                 $doc = new_doc($dbaccess, $gfid);
                 if ($doc->isAlive() && method_exists($doc, 'refreshFromLDAP')) {
-                    /* @var $doc _NU_COMMON */
+                    /* @var \Dcp\Networkuser\NUCommon $doc */
                     $doc->refreshFromLDAP();
                 }
             }
@@ -92,27 +92,25 @@ function createLDAPFamily($sid, &$doc, $family, $isgroup)
     }
     return "";
 }
-
 /**
  * @param string $sid identifier
- * @param _LDAPGROUP $doc
+ * @param \Dcp\Networkuser\Ldapgroup $doc
  * @return bool|string
  */
 function createLDAPGroup($sid, &$doc)
 {
     if (!$sid) return false;
-    $err = createLDAPFamily($sid, $doc, "LDAPGROUP", true);
+    $err = createLDAPFamily($sid, $doc, \Dcp\Family\Ldapgroup::familyName, true);
     return $err;
 }
-
 /**
  * @param string $sid identifier
- * @param _LDAPUSER $doc
+ * @param \Dcp\Networkuser\NUCommon $doc
  * @return bool|string
  */
 function createLDAPUser($sid, &$doc)
 {
     if (!$sid) return false;
-    $err = createLDAPFamily($sid, $doc, "LDAPUSER", false);
+    $err = createLDAPFamily($sid, $doc, \Dcp\Family\Ldapuser::familyName, false);
     return $err;
 }

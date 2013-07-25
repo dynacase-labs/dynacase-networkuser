@@ -6,16 +6,18 @@
  * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
  * @package NU
 */
-/* @begin-method-ignore */
-class _LDAPGROUP extends _IGROUP
+
+namespace Dcp\Networkuser;
+
+use \Dcp\AttributeIdentifiers\Ldapgroup as myAttribute;
+use \Dcp\AttributeIdentifiers as Attribute;
+use \Dcp\Family\Igroup;
+
+class LDAPGroup extends Igroup
 {
-    /* @end-method-ignore */
     var $defaultview = "FDL:VIEWBODYCARD"; // use default view
     function postStore()
     {
         return parent::postStore();
     }
-    /* @begin-method-ignore */
 }
-/* @end-method-ignore */
-

@@ -12,7 +12,7 @@ include_once "NU/Lib.ConfLDAP.php";
  * return LDAP AD information from SID
  * @param string $sid ascii unique id
  * @param array &$info ldap information
- * @param $isgroup
+ * @param bool $isgroup
  * @internal param string $ldapuniqid ldap attribute for filter unique id
  * @return string error message - empty means no error
  */
@@ -34,8 +34,8 @@ function getAdInfoFromSid($sid, &$info, $isgroup)
 /**
  * return LDAP AD information from the $login
  * @param string $login connection identificator
- * @param $ldapclass
- * @param $ldapbindloginattribute
+ * @param string $ldapclass
+ * @param string $ldapbindloginattribute
  * @param array &$info ldap information
  * @return string error message - empty means no error
  */
@@ -140,10 +140,10 @@ function getLDAPFrom($ldapbase, $addfilter, $login, $ldapclass, $ldapbindloginat
     return $err;
 }
 /**
- * serach LDAP AD information which match the $login
+ * Search LDAP AD information which match the $login
  * @param string $login connection identificator
- * @param $ldapclass
- * @param $ldapbindloginattribute
+ * @param string $ldapclass
+ * @param string $ldapbindloginattribute
  * @param array &$info ldap information
  * @return string error message - empty means no error
  */
@@ -273,7 +273,7 @@ function getLDAPFromLogin($login, $isgroup, &$info)
 }
 /**
  * return LDAP AD information from the $login
- * @param $uid
+ * @param string $uid
  * @param bool $isgroup true if group, false if user
  * @param array &$info ldap information
  * @internal param string $login connection identificator
@@ -321,7 +321,7 @@ function searchLDAPFromLogin($login, $isgroup, &$info)
 /**
  * encode Active Directory session id in binary format
  * @param string $sid
- * @return data the binary id
+ * @return string data the binary id
  */
 function sid_encode($sid)
 {
@@ -355,7 +355,7 @@ function sid_encode($sid)
 }
 /**
  * Decode Active Directory session id in ascii format
- * @param data $osid the binary session id
+ * @param string $osid the binary session id
  * @return string the ascii id (false if error)
  */
 function sid_decode($osid)

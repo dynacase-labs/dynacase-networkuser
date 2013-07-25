@@ -6,24 +6,27 @@
  * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
  * @package NU
 */
-/* @begin-method-ignore */
-class _LDAPUSER extends _NU_COMMON
+
+namespace Dcp\Networkuser;
+
+use \Dcp\AttributeIdentifiers\Ldapuser as myAttribute;
+use \Dcp\AttributeIdentifiers as Attribute;
+use \Dcp\Family\Iuser;
+
+class LDAPUser extends Iuser
 {
-    /* @end-method-ignore */
     var $defaultview = "FDL:VIEWBODYCARD"; // use default view
     var $defaultedit = "FDL:EDITBODYCARD"; // use default view
     var $defaultcreate = "NU:NU_EDIT"; // use default view
-
-    
     function postCreated()
     {
         $user = $this->getAccount();
         
         if (!$user) {
-            $user = new Account(""); // create new user
+            $user = new \Account(""); // create new user
             $this->wuser = & $user;
             
-            $login = $this->getRawValue("us_login");
+            $login = $this->getRawValue(myAttribute::us_login);
             $this->wuser->firstname = 'Unknown';
             $this->wuser->lastname = 'To Define';
             $this->wuser->login = $login;
@@ -32,9 +35,9 @@ class _LDAPUSER extends _NU_COMMON
             $this->wuser->fid = $this->id;
             $err = $this->wuser->Add(true);
             
-            $this->setValue("US_WHATID", $this->wuser->id);
+            $this->setValue(myAttribute::us_whatid, $this->wuser->id);
             $this->modify(false, array(
-                "us_whatid"
+                myAttribute::us_whatid
             ));
             $this->refreshFromLDAP();
             
@@ -51,7 +54,4 @@ class _LDAPUSER extends _NU_COMMON
     {
         $this->editattr(true);
     }
-    /* @begin-method-ignore */
 }
-/* @end-method-ignore */
-?>
