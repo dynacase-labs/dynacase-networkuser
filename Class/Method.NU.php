@@ -7,7 +7,9 @@
  * @package NU
 */
 /* @begin-method-ignore */
-class _NU_COMMON extends _IGROUP
+namespace Dcp\Networkuser;
+
+class NUCommon extends \Dcp\Family\Igroup
 {
     public function existsLogin($a, $b)
     {
@@ -34,7 +36,7 @@ class _NU_COMMON extends _IGROUP
         
         $ldap_group_base_dn = getParam("NU_LDAP_GROUP_BASE_DN", "");
         
-        $err = getLDAPFromLogin($this->getRawValue('us_login') , ($this->doctype == 'D') , $info);
+        $err = getLDAPFromLogin($this->getRawValue(\Dcp\AttributeIdentifiers\Ldapgroup::us_login) , ($this->doctype == 'D') , $info);
         $ldapmap = $this->getMapAttributes();
         foreach ($ldapmap as $v) {
             
@@ -56,11 +58,11 @@ class _NU_COMMON extends _IGROUP
                 }
             }
         }
-        $name = $this->getRawValue("GRP_NAME");
-        if ($name == "") $this->setValue("GRP_NAME", $this->getRawValue("US_LOGIN"));
+        $name = $this->getRawValue(\Dcp\AttributeIdentifiers\Ldapgroup::grp_name);
+        if ($name == "") $this->setValue(\Dcp\AttributeIdentifiers\Ldapgroup::grp_name, $this->getRawValue(\Dcp\AttributeIdentifiers\Ldapgroup::us_login));
         $err = $this->modify();
         
-        $t_docgroupid = $this->getMultipleRawValues("us_idgroup"); // memo group of the user
+        $t_docgroupid = $this->getMultipleRawValues(\Dcp\AttributeIdentifiers\Ldapuser::us_idgroup); // memo group of the user
         $tnew_docgroupid = array();
         
         $user = $this->getAccount();
@@ -68,21 +70,21 @@ class _NU_COMMON extends _IGROUP
         if ($user) {
             if ($user->accounttype == 'G') {
                 $user->firstname = "";
-                $user->lastname = $this->getRawValue("grp_name");
-                $user->mail = $this->getRawValue("grp_mail");
+                $user->lastname = $this->getRawValue(\Dcp\AttributeIdentifiers\Ldapgroup::grp_name);
+                $user->mail = $this->getRawValue(\Dcp\AttributeIdentifiers\Ldapgroup::grp_mail);
             } else {
-                $user->firstname = $this->getRawValue("us_fname");
-                $user->lastname = $this->getRawValue("us_lname");
-                $this->setValue("us_mail", $this->getRawValue("us_extmail"));
-                $user->mail = $this->getRawValue("us_mail");
-                if ($this->getOldRawValue('us_mail') != '') {
+                $user->firstname = $this->getRawValue(\Dcp\AttributeIdentifiers\Ldapuser::us_fname);
+                $user->lastname = $this->getRawValue(\Dcp\AttributeIdentifiers\Ldapuser::us_lname);
+                $this->setValue("us_mail", $this->getRawValue(\Dcp\AttributeIdentifiers\Ldapuser::us_extmail));
+                $user->mail = $this->getRawValue(\Dcp\AttributeIdentifiers\Ldapuser::us_mail);
+                if ($this->getOldRawValue(\Dcp\AttributeIdentifiers\Ldapuser::us_mail) != '') {
                     $userMailHasChanged = true;
                 }
             }
             $user->modify(true);
         }
         /**
-         * @var _LDAPGROUP $dg
+         * @var \Dcp\Networkuser\Ldapgroup $dg
          */
         $dg = null;
         /*
@@ -102,7 +104,7 @@ class _NU_COMMON extends _IGROUP
                     if ($err == "") {
                         $gid = $infogrp["objectsid"];
                         /**
-                         * @var _LDAPGROUP $dg
+                         * @var \Dcp\Networkuser\Ldapgroup $dg
                          */
                         $err = createLDAPGroup($gid, $dg);
                         if ($err == "") {
@@ -174,10 +176,10 @@ class _NU_COMMON extends _IGROUP
             $tdiff = array_diff($t_docgroupid, $tnew_docgroupid);
             foreach ($tdiff as $docid) {
                 $doc = new_doc($this->dbaccess, $docid);
-                $uid = $doc->getRawValue("ldap_uniqid");
+                $uid = $doc->getRawValue(\Dcp\AttributeIdentifiers\Ldapgroup::ldap_uniqid);
                 if ($uid) {
                     /**
-                     * @var Dir $doc
+                     * @var \Dcp\Family\Dir $doc
                      */
                     $err = $doc->removeDocument($this->initid);
                     if ($err == "") {
@@ -191,13 +193,16 @@ class _NU_COMMON extends _IGROUP
         if ($userMailHasChanged) {
             $coreGroupIdList = array();
             
-            $freedomGroupIdList = $this->getMultipleRawValues('us_idgroup');
+            $freedomGroupIdList = $this->getMultipleRawValues(\Dcp\AttributeIdentifiers\Ldapuser::us_idgroup);
             foreach ($freedomGroupIdList as $id) {
+                /**
+                 * @var \Dcp\Family\Document $doc
+                 */
                 $doc = new_Doc($this->dbaccess, $id);
                 if (!is_object($doc) || !$doc->isAlive()) {
                     continue;
                 }
-                array_push($coreGroupIdList, $doc->getRawValue('us_whatid'));
+                array_push($coreGroupIdList, $doc->getRawValue(\Dcp\AttributeIdentifiers\Ldapgroup::us_whatid));
             }
             refreshGroups($coreGroupIdList);
         }
@@ -210,13 +215,13 @@ class _NU_COMMON extends _IGROUP
             $ldapUserFamId = getIdFromName($this->dbaccess, 'LDAPUSER');
             if (is_numeric($ldapUserFamId)) {
                 /**
-                 * @var _LDAPUSER $ldapUserFam
+                 * @var \Dcp\Networkuser\Ldapuser $ldapUserFam
                  */
                 $ldapUserFam = new_Doc($this->dbaccess, $ldapUserFamId, true);
                 if (is_object($ldapUserFam)) {
                     $defaultGroupId = $ldapUserFam->getFamilyParameterValue('US_DEFAULTGROUP');
                     /**
-                     * @var _IGROUP $defaultGroup
+                     * @var \Dcp\Networkuser\Ldapgroup $defaultGroup
                      */
                     $defaultGroup = new_Doc($this->dbaccess, $defaultGroupId, true);
                     if (is_object($defaultGroup) && $defaultGroup->isAlive()) {

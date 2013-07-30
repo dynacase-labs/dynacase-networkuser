@@ -75,7 +75,7 @@ foreach ($groups as $sid => $group) {
             }
             continue;
         }
-        /* @var $doc _NU_COMMON */
+        /* @var \Dcp\Networkuser\NUCommon $doc */
         $err = $doc->refreshFromLDAP();
         if ($err == "") $doc->postStore();
         if ($err != "") print SKIPCOLOR;

@@ -20,6 +20,11 @@ SUBDIR= Class Zone Api Images Provider
 
 pages_not_xml = info.xml
 
+.PHONY : publish clean stub
+
+STUB = Class/stubNetworkuserFamilies.php
+STUB_ODS = networkuser.ods
+
 include $(utildir)/PubRule
 
 DISTFILES += $(SUBDIR) networkuser.ods \
@@ -36,3 +41,13 @@ $(pubdir)/$(appname)/networkuser.ods : networkuser.ods
 	cp networkuser.ods $(pubdir)/$(appname)
 
 publish: $(pubdir)/$(appname)/networkuser.ods $(pubdir)/EXTERNALS/nu.php
+
+Class/stub%Families.php: ${STUB_ODS}
+	php ${utildir}/genStubFamilyClass.php ${STUB_ODS} > $@
+
+stub: ${STUB}
+
+clean:
+	rm -f Makefile NU_init.php config.{log,status} configure info.xml
+	rm -rf autom4te.cache
+

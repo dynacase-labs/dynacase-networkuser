@@ -38,7 +38,7 @@ if ($err) {
 
 foreach ($groups as $sid => $group) {
     print "Search group $sid...";
-    $doc = getDocFromUniqId($sid, "LDAPGROUP");
+    $doc = getDocFromUniqId($sid, \Dcp\Family\Ldapgroup::familyName);
     
     if (!$doc) {
         $err = createLDAPGroup($sid, $doc);
@@ -47,7 +47,7 @@ foreach ($groups as $sid => $group) {
         if ($err != "") print "[$err]" . STOPCOLOR;
         print "\n";
     } else {
-        /* @var $doc _NU_COMMON */
+        /* @var \Dcp\Networkuser\NUCommon $doc */
         $err = $doc->refreshFromLDAP();
         if ($err == "") $doc->postStore();
         if ($err != "") print SKIPCOLOR;
@@ -69,7 +69,7 @@ if ($err) {
 
 foreach ($users as $sid => $user) {
     print "Search user $sid...";
-    $doc = getDocFromUniqId($sid, "LDAPUSER");
+    $doc = getDocFromUniqId($sid, \Dcp\Family\Ldapuser::familyName);
     if (!$doc) {
         $err = createLDAPUser($sid, $doc);
         if ($err != "") print SKIPCOLOR;
