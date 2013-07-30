@@ -17,7 +17,61 @@ msgstr ""
 "\n"
 
 #, c-format
-msgid "Unable to connect to LDAP server %s"
+msgid "Add to group %s"
+msgstr ""
+
+#, c-format
+msgid "Cannot create LDAP %s [%s] : %s"
+msgstr ""
+
+#, c-format
+msgid "Cannot find group [%s]"
+msgstr ""
+
+#, c-format
+msgid "Cannot find user [%s]"
+msgstr ""
+
+msgid "Create User From LDAP"
+msgstr ""
+
+msgid "DN of user which can access of all user and group of the LDAP"
+msgstr ""
+
+#, c-format
+msgid "Delete from group %s"
+msgstr ""
+
+#, c-format
+msgid "Find mutiple grp with same login  [%s]"
+msgstr ""
+
+#, c-format
+msgid "Find mutiple user with same id  [%s]"
+msgstr ""
+
+msgid "LDAP connection mode"
+msgstr ""
+
+msgid "LDAP group filter"
+msgstr ""
+
+msgid "LDAP user filter"
+msgstr ""
+
+msgid "Name or login"
+msgstr ""
+
+msgid "Network users"
+msgstr ""
+
+msgid "Network users and LDAP authentification"
+msgstr ""
+
+msgid "Result"
+msgstr ""
+
+msgid "Search"
 msgstr ""
 
 #, c-format
@@ -29,88 +83,34 @@ msgid "Unable to bind to LDAP server %s"
 msgstr ""
 
 #, c-format
-msgid "Cannot create LDAP %s [%s] : %s"
+msgid "Unable to connect to LDAP server %s"
 msgstr ""
 
-#, c-format
-msgid "Cannot find user [%s]"
+msgid "base DN for LDAP groups"
 msgstr ""
 
-#, c-format
-msgid "Find mutiple user with same id  [%s]"
-msgstr ""
-
-#, c-format
-msgid "Add to group %s"
-msgstr ""
-
-#, c-format
-msgid "Delete from group %s"
-msgstr ""
-
-#, c-format
-msgid "Cannot find group [%s]"
-msgstr ""
-
-#, c-format
-msgid "Find mutiple grp with same login  [%s]"
-msgstr ""
-
-msgid "the login must not be empty"
-msgstr ""
-
-msgid "Network users"
-msgstr ""
-
-msgid "Network users and LDAP authentification"
+msgid "base DN for LDAP users"
 msgstr ""
 
 #, c-format
 msgid "cannot create user %s: %s"
 msgstr ""
 
-#, c-format
-msgid "user %s not exists for FREEDOM"
-msgstr ""
-
 msgid "host of the LDAP"
-msgstr ""
-
-msgid "port of the LDAP"
-msgstr ""
-
-msgid "LDAP connection mode"
-msgstr ""
-
-msgid "base DN for LDAP groups"
-msgstr ""
-
-msgid "LDAP group filter"
-msgstr ""
-
-msgid "base DN for LDAP users"
-msgstr ""
-
-msgid "LDAP user filter"
-msgstr ""
-
-msgid "DN of user which can access of all user and group of the LDAP"
-msgstr ""
-
-msgid "password of the DN"
 msgstr ""
 
 msgid "kind of users LDAP for authentification"
 msgstr ""
 
-msgid "Create User From LDAP"
+msgid "password of the DN"
 msgstr ""
 
-msgid "Search"
+msgid "port of the LDAP"
 msgstr ""
 
-msgid "Name or login"
+msgid "the login must not be empty"
 msgstr ""
 
-msgid "Result"
+#, c-format
+msgid "user %s not exists for FREEDOM"
 msgstr ""

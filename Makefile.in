@@ -16,7 +16,7 @@ GZIP_ENV = --best
 TOP_MODULES = nu.php
 export targetdir PACKAGE
 
-SUBDIR= Class Zone Api Images Provider
+SUBDIR= Class Zone Api Images Provider locale
 
 pages_not_xml = info.xml
 
@@ -26,6 +26,8 @@ STUB = Class/stubNetworkuserFamilies.php
 STUB_ODS = networkuser.ods
 
 include $(utildir)/PubRule
+
+TRANSODS = networkuser.ods
 
 DISTFILES += $(SUBDIR) networkuser.ods \
             RELEASE VERSION
