@@ -23,6 +23,7 @@
   <post-upgrade>
     <process command="programs/pre_migration NU" />
     <process command="./wsh.php --api=importDocuments --file=./NU/networkuser.ods" />
+    <process command="./wsh.php --api=importDocuments --file=./NU/networkuser-ldapmap.ods" />
     <process command="programs/record_application NU" />
     <process command="programs/post_migration NU" />
     <process command="programs/update_catalog" />
