@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ -z "$pgservice_core" ]; then
+	echo "Undefined or empty pgservice_core!"
+	exit 1
+fi
+
+PGSERVICE="$pgservice_core" psql --set ON_ERROR_STOP=on -f - <<'EOF'
+BEGIN;
+
+UPDATE docfam SET ccvid = cv.id FROM doc AS cv 
+	WHERE docfam.name = 'LDAPUSER' AND docfam.ccvid IS NULL AND cv.name = 'CV_LDAPUSER';
+-- SELECT name, ccvid FROM docfam WHERE name = 'LDAPUSER';
+
+UPDATE doc SET cvid = cv.id FROM doc AS docfrom, doc AS cv
+	WHERE doc.fromid = docfrom.id AND doc.cvid IS NULL AND docfrom.name = 'LDAPUSER' AND cv.name = 'CV_LDAPUSER';
+-- SELECT doc.title, doc.cvid FROM doc, doc AS docfrom WHERE doc.fromid = docfrom.id AND docfrom.name = 'LDAPUSER';
+
+COMMIT;
+EOF
