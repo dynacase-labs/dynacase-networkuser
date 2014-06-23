@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LDAPUSER \n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2013-07-30T09:05:23+02:00\n"
+"PO-Revision-Date: 2014-06-23 11:02+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -12,85 +12,71 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPUSER#ad_changegroup"
-msgstr "Affectation des groupes"
+msgstr "Change groups"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPUSER#ad_id"
-msgstr "identifiant"
+msgstr "identifier"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPUSER#ad_primarygroup"
-msgstr "groupe primaire"
+msgstr "primary group"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPUSER#ad_refresh"
-msgstr "Actualiser depuis le LDAP"
+msgstr "Refresh from LDAP"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPUSER#ldap_changedate"
-msgstr "date de modification"
+msgstr "change date"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPUSER#ldap_createdate"
-msgstr "date de création"
+msgstr "create date"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPUSER#ldap_displayname"
-msgstr "nom affiché"
+msgstr "displayed name"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPUSER#ldap_dn"
-msgstr "nom LDAP"
+msgstr "LDAP distinguished name"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPUSER#ldap_getinfo"
-msgstr "login LDAP"
+msgstr "LDAP login"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPUSER#ldap_uniqid"
-msgstr "identifiant unique"
+msgstr "unique identifier"
 
-#, fuzzy
 msgid "LDAPUSER#title"
-msgstr "utilisateur réseau"
+msgstr "network user"
 
 #: networkuser.ods.csv
 msgid "LDAPUSER#us_extmail"
-msgstr ""
+msgstr "external mail"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPUSER#us_fr_ad"
 msgstr "AD Identification"
 
 #: networkuser.ods.csv
 msgid "LDAPUSER#us_fr_intranet"
-msgstr ""
+msgstr "Intranet identification"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPUSER#us_fr_ldap"
 msgstr "LDAP Identification"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPUSER#us_fr_searchldap"
-msgstr "LDAP Recherche"
+msgstr "LDAP Search"
 
 #: networkuser.ods.csv
 msgid "LDAPUSER#us_login"
-msgstr ""
+msgstr "login"
 
 #: networkuser.ods.csv
 msgid "LDAPUSER#us_passwd1"
