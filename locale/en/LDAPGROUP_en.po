@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LDAPGROUP \n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2013-07-30T09:05:23+02:00\n"
+"PO-Revision-Date: 2014-06-23 11:05+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -12,61 +12,52 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPGROUP#ad_id"
-msgstr "identifiant"
+msgstr "identifier"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPGROUP#ad_primarygroup"
-msgstr "groupe primaire"
+msgstr "primary group"
 
 #: networkuser.ods.csv
 msgid "LDAPGROUP#fld_insertdoc"
-msgstr ""
+msgstr "insert document"
 
 #: networkuser.ods.csv
 msgid "LDAPGROUP#grp_adduser"
-msgstr ""
+msgstr "add user"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPGROUP#grp_fr_ad"
 msgstr "AD Identification"
 
 #: networkuser.ods.csv
 msgid "LDAPGROUP#grp_fr_intranet"
-msgstr ""
+msgstr "Intranet identification"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPGROUP#grp_fr_ldap"
 msgstr "LDAP Identification"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPGROUP#ldap_changedate"
-msgstr "date de modification"
+msgstr "change date"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPGROUP#ldap_createdate"
-msgstr "date de création"
+msgstr "creation date"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPGROUP#ldap_dn"
-msgstr "nom LDAP"
+msgstr "LDAP distinguished name"
 
 #: networkuser.ods.csv
-#, fuzzy
 msgid "LDAPGROUP#ldap_uniqid"
-msgstr "identifiant unique"
+msgstr "unique identifier"
 
-#, fuzzy
 msgid "LDAPGROUP#title"
-msgstr "groupe réseau"
+msgstr "network group"
 
 #: networkuser.ods.csv
 msgid "LDAPGROUP#us_login"
-msgstr ""
+msgstr "login"
