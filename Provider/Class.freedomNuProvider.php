@@ -227,7 +227,7 @@ Class freedomNuProvider extends Provider
         
         $CoreNull = "";
         $core = new Application();
-        $core->Set("CORE", $CoreNull);
+        $core->set("CORE", $CoreNull);
         $core->session = new Session();
         $action = new Action();
         $action->Set("", $core);
@@ -245,9 +245,7 @@ Class freedomNuProvider extends Provider
             return sprintf(_("cannot create user %s: %s") , $username, $err);
         }
         
-        $dbaccess = getParam("FREEDOM_DB");
-        
-        $du = new_doc($dbaccess, $wu->fid);
+        $du = new_Doc($action->dbaccess, $wu->fid);
         if (!$du->isAlive()) {
             $err = $wu->delete();
             $core->session->close();
