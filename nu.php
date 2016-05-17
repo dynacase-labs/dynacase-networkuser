@@ -18,7 +18,7 @@ if ($login) {
         $WHATUSER = new Account();
         if (!seems_utf8($login)) $login = utf8_encode($login);
         $login = trim($login);
-        if ($WHATUSER->SetLoginName($login)) {
+        if ($WHATUSER->setLoginName($login)) {
             // already exists
             // 1. Verify if session expired
             // 2 . If expired Then verify whenChanged and update if needed
@@ -34,7 +34,7 @@ if ($login) {
                 global $action;
                 $CoreNull = "";
                 $core = new Application();
-                $core->Set("CORE", $CoreNull);
+                $core->set("CORE", $CoreNull);
                 $core->session = new Session();
                 $action = new Action();
                 $action->Set("", $core);
@@ -52,8 +52,7 @@ if ($login) {
                 }
                 
                 include_once ("FDL/Class.DocFam.php");
-                $dbaccess = getParam("FREEDOM_DB");
-                $du = new_doc($dbaccess, $WHATUSER->fid);
+                $du = new_Doc($action->dbaccess, $WHATUSER->fid);
                 $du->setValue("us_whatid", $WHATUSER->id);
                 $du->modify();
                 $err = $du->refreshFromLDAP();
@@ -65,29 +64,5 @@ if ($login) {
         }
     }
 }
-/*
-// ---------------------------- TEST PART
-if (! $core) {
-  global $action;
-      $CoreNull="";
-      $core = new Application();
-      $core->Set("CORE",$CoreNull);
-      $core->session=new Session();
-      $action=new Action();
-      $action->Set("",$core);
-      $action->user=new User("",1); //create user as admin     
- }
 
-include_once("FDL/Class.DocFam.php");
-$dbaccess=getParam("FREEDOM_DB");
-$WHATUSER=new_doc($dbaccess,$WHATUSER->fid);
-$WHATUSER->refreshFromLDAP();
-
-
-
-
-exit;
-*/
-// ---------------------------- END TEST PART
 include ('./index.php');
-?>

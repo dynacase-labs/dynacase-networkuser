@@ -57,7 +57,7 @@ function createLDAPFamily($sid, &$doc, $family, $isgroup)
         if (!seems_utf8($infogrp[$alogin])) {
             $infogrp[$alogin] = utf8_encode($infogrp[$alogin]);
         }
-        $g->SetLoginName($infogrp[$alogin]);
+        $g->setLoginName($infogrp[$alogin]);
         if (!$g->isAffected()) {
             foreach ($infogrp as $k => $v) {
                 if (is_scalar($v) && !seems_utf8($v)) {
@@ -77,8 +77,7 @@ function createLDAPFamily($sid, &$doc, $family, $isgroup)
         if ($err == "") {
             $gfid = $g->fid;
             if ($gfid) {
-                $dbaccess = getParam("FREEDOM_DB");
-                $doc = new_doc($dbaccess, $gfid);
+                $doc = new_Doc('', $gfid);
                 if ($doc->isAlive() && method_exists($doc, 'refreshFromLDAP')) {
                     /* @var \Dcp\Networkuser\NUCommon $doc */
                     $doc->refreshFromLDAP();

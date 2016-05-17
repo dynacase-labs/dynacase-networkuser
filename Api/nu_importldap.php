@@ -14,12 +14,6 @@ define("SKIPCOLOR", '[1;31;40m');
 define("UPDTCOLOR", '[1;32;40m');
 define("STOPCOLOR", '[0m');
 
-$dbaccess = GetParam("FREEDOM_DB");
-if ($dbaccess == "") {
-    print "Freedom Database not found : param FREEDOM_DB\n";
-    exit(1);
-}
-
 $conf = getLDAPconf(getParam("NU_LDAP_KIND"));
 if (!$conf) {
     print "Kind of LDAP database must be defined: parameter NU_LDAP_KIND.\n";
